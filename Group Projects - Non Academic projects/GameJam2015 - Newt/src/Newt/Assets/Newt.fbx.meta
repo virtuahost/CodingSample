@@ -1,0 +1,313 @@
+fileFormatVersion: 2
+guid: 6300edea070164284a975344005f3b19
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: body_CTRL
+    100002: head_CTRL
+    100004: head_ctrl_GRP
+    100006: head_jnt
+    100008: L_arm_CTRL
+    100010: L_arm_jnt
+    100012: L_arm_tip_jnt
+    100014: L_foot_CTRL
+    100016: L_foot_jnt
+    100018: L_leg_ikHandle
+    100020: L_leg_jnt
+    100022: L_shoulder_CTRL
+    100024: L_shoulder_jnt
+    100026: neck_CTRL
+    100028: neck_jnt
+    100030: Newt_GEO
+    100032: Newt_misc
+    100034: //RootNode
+    100036: R_arm_CTRL
+    100038: R_arm_jnt
+    100040: R_arm_tip_jnt
+    100042: R_foot_CTRL
+    100044: R_foot_jnt
+    100046: R_leg_ikHandle
+    100048: R_leg_jnt
+    100050: R_shoulder_CTRL
+    100052: R_shoulder_jnt
+    100054: root_jnt
+    400000: body_CTRL
+    400002: head_CTRL
+    400004: head_ctrl_GRP
+    400006: head_jnt
+    400008: L_arm_CTRL
+    400010: L_arm_jnt
+    400012: L_arm_tip_jnt
+    400014: L_foot_CTRL
+    400016: L_foot_jnt
+    400018: L_leg_ikHandle
+    400020: L_leg_jnt
+    400022: L_shoulder_CTRL
+    400024: L_shoulder_jnt
+    400026: neck_CTRL
+    400028: neck_jnt
+    400030: Newt_GEO
+    400032: Newt_misc
+    400034: //RootNode
+    400036: R_arm_CTRL
+    400038: R_arm_jnt
+    400040: R_arm_tip_jnt
+    400042: R_foot_CTRL
+    400044: R_foot_jnt
+    400046: R_leg_ikHandle
+    400048: R_leg_jnt
+    400050: R_shoulder_CTRL
+    400052: R_shoulder_jnt
+    400054: root_jnt
+    4300000: Newt_GEO
+    9500000: //RootNode
+    13700000: Newt_GEO
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    animationCompression: 3
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human:
+    - boneName: root_jnt
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: L_shoulder_jnt
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: R_shoulder_jnt
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: L_arm_tip_jnt
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: R_arm_tip_jnt
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: neck_jnt
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: head_jnt
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: Newt_Rig(Clone)
+      position: {x: -0, y: -.0498204157, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: body_CTRL
+      position: {x: -0, y: .0404614694, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: head_ctrl_GRP
+      position: {x: -9.72663838e-05, y: .0432946943, z: 1.90180631e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: head_CTRL
+      position: {x: -1.76941791e-18, y: 0, z: -1.90180631e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_shoulder_CTRL
+      position: {x: -.0144412564, y: .0191227924, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_arm_CTRL
+      position: {x: -.00593903102, y: -.000329946168, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: neck_CTRL
+      position: {x: -0, y: .0276427697, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_shoulder_CTRL
+      position: {x: .0144412564, y: .0191227924, z: -1.76854379e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_arm_CTRL
+      position: {x: .00593903102, y: -.000329946168, z: -7.2732156e-19}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_foot_CTRL
+      position: {x: -.0110625522, y: 1.91262407e-05, z: -6.34444004e-05}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Newt_GEO
+      position: {x: -0, y: .0498204157, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Newt_misc
+      position: {x: -0, y: .0498204157, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_leg_ikHandle
+      position: {x: -.0109627992, y: -.0503346473, z: -6.34444004e-05}
+      rotation: {x: 0, y: 0, z: .700520813, w: .713631988}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_leg_ikHandle
+      position: {x: .0110319639, y: -.0503346734, z: -9.33672782e-05}
+      rotation: {x: .713631988, y: -.700520813, z: -4.2894526e-17, w: 4.36973577e-17}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_foot_CTRL
+      position: {x: .0110111116, y: 1.91262407e-05, z: -9.33672782e-05}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: root_jnt
+      position: {x: -1.79984363e-05, y: .0392775014, z: 0}
+      rotation: {x: 0, y: 0, z: -.706535339, w: .707677841}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_leg_jnt
+      position: {x: .0157909971, y: -.010586421, z: 0}
+      rotation: {x: .00132242043, y: -1.33309522e-05, z: .999960363, w: .00881060306}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_foot_jnt
+      position: {x: -.0237923786, y: 2.91433535e-18, z: 0}
+      rotation: {x: 0, y: 0, z: -.700520813, w: .713631988}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_shoulder_jnt
+      position: {x: -.0189115405, y: -.0113258325, z: 0}
+      rotation: {x: 0, y: 0, z: .734365344, w: .678754449}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_arm_jnt
+      position: {x: -.00905647874, y: .000510764832, z: 0}
+      rotation: {x: 0, y: 0, z: .672795951, w: .73982811}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: L_arm_tip_jnt
+      position: {x: -.0314073414, y: -8.881784e-18, z: 0}
+      rotation: {x: 0, y: 0, z: -.649006665, w: .760782719}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: neck_jnt
+      position: {x: -.0287361667, y: -1.24032722e-17, z: 3.8518598e-36}
+      rotation: {x: .99997896, y: -.00648939703, z: -6.16284099e-17, w: 6.08336879e-17}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: head_jnt
+      position: {x: -.0157411434, y: .0002117166, z: 2.59278067e-20}
+      rotation: {x: -.703077972, y: .711112857, z: 4.35431051e-17, w: -4.3051108e-17}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_leg_jnt
+      position: {x: .0158251841, y: .0105713429, z: 0}
+      rotation: {x: .999836981, y: .0179514885, z: -.00194511295, w: 1.64573303e-05}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_foot_jnt
+      position: {x: .0237923879, y: 4.05377953e-08, z: -4.9644484e-24}
+      rotation: {x: 8.63606973e-33, y: -8.5789052e-17, z: -.700520813, w: .713631988}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_shoulder_jnt
+      position: {x: -.0188748427, y: .0113869105, z: 0}
+      rotation: {x: .727987051, y: .685590923, z: -1.62395771e-17, w: -9.77474499e-17}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_arm_jnt
+      position: {x: .00910167117, y: -.000299528649, z: 1.11463322e-18}
+      rotation: {x: -3.20627251e-19, y: 7.62953744e-17, z: .68124789, w: .732052803}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: R_arm_tip_jnt
+      position: {x: .0314073004, y: -1.36569991e-08, z: -3.75876123e-18}
+      rotation: {x: 1.26746444e-08, y: -1.0812454e-08, z: -.649006665, w: .760782719}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 3
+  additionalBone: 0
+  userData: 

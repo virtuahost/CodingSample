@@ -1,0 +1,117 @@
+fileFormatVersion: 2
+guid: 53d29d0522659b8499c28a46231ea2a1
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: Hallway_T_Right
+    100002: //RootNode
+    100004: Hallway_T_Left
+    100006: Ceiling_Hallway_T_Right Hallway_T_Right1
+    100008: Floor_Hallway_T_Right polySurface10 Hallway_T_Right1
+    100010: Hallway_T_Right_polySurface2 Hallway_T_Right1
+    100012: Hallway_T_Right_polySurface3 Hallway_T_Right1
+    100014: Hallway_T_Right_polySurface9 Hallway_T_Right1
+    100016: Floor_Hallway_T_Right Hallway_T_Right1 polySurface10 polySurface1
+    100018: Hallway_T_Right_Hallway_T_Right1 polySurface2 polySurface1
+    100020: Hallway_T_Right_Hallway_T_Right1 polySurface3 polySurface1
+    100022: Hallway_T_Right_Hallway_T_Right1 polySurface9 polySurface1
+    400000: Hallway_T_Right
+    400002: //RootNode
+    400004: Hallway_T_Left
+    400006: Ceiling_Hallway_T_Right Hallway_T_Right1
+    400008: Floor_Hallway_T_Right polySurface10 Hallway_T_Right1
+    400010: Hallway_T_Right_polySurface2 Hallway_T_Right1
+    400012: Hallway_T_Right_polySurface3 Hallway_T_Right1
+    400014: Hallway_T_Right_polySurface9 Hallway_T_Right1
+    400016: Floor_Hallway_T_Right Hallway_T_Right1 polySurface10 polySurface1
+    400018: Hallway_T_Right_Hallway_T_Right1 polySurface2 polySurface1
+    400020: Hallway_T_Right_Hallway_T_Right1 polySurface3 polySurface1
+    400022: Hallway_T_Right_Hallway_T_Right1 polySurface9 polySurface1
+    2300000: Hallway_T_Right
+    2300002: Hallway_T_Left
+    2300004: Ceiling_Hallway_T_Right Hallway_T_Right1
+    2300006: Floor_Hallway_T_Right polySurface10 Hallway_T_Right1
+    2300008: Hallway_T_Right_polySurface2 Hallway_T_Right1
+    2300010: Hallway_T_Right_polySurface3 Hallway_T_Right1
+    2300012: Hallway_T_Right_polySurface9 Hallway_T_Right1
+    2300014: Floor_Hallway_T_Right Hallway_T_Right1 polySurface10 polySurface1
+    2300016: Hallway_T_Right_Hallway_T_Right1 polySurface2 polySurface1
+    2300018: Hallway_T_Right_Hallway_T_Right1 polySurface3 polySurface1
+    2300020: Hallway_T_Right_Hallway_T_Right1 polySurface9 polySurface1
+    3300000: Hallway_T_Right
+    3300002: Hallway_T_Left
+    3300004: Ceiling_Hallway_T_Right Hallway_T_Right1
+    3300006: Floor_Hallway_T_Right polySurface10 Hallway_T_Right1
+    3300008: Hallway_T_Right_polySurface2 Hallway_T_Right1
+    3300010: Hallway_T_Right_polySurface3 Hallway_T_Right1
+    3300012: Hallway_T_Right_polySurface9 Hallway_T_Right1
+    3300014: Floor_Hallway_T_Right Hallway_T_Right1 polySurface10 polySurface1
+    3300016: Hallway_T_Right_Hallway_T_Right1 polySurface2 polySurface1
+    3300018: Hallway_T_Right_Hallway_T_Right1 polySurface3 polySurface1
+    3300020: Hallway_T_Right_Hallway_T_Right1 polySurface9 polySurface1
+    4300000: Hallway_T_Right
+    4300002: Hallway_T_Left
+    4300004: Ceiling_Hallway_T_Right Hallway_T_Right1
+    4300006: Floor_Hallway_T_Right polySurface10 Hallway_T_Right1
+    4300008: Hallway_T_Right_polySurface2 Hallway_T_Right1
+    4300010: Hallway_T_Right_polySurface3 Hallway_T_Right1
+    4300012: Hallway_T_Right_polySurface9 Hallway_T_Right1
+    4300014: Floor_Hallway_T_Right Hallway_T_Right1 polySurface10 polySurface1
+    4300016: Hallway_T_Right_Hallway_T_Right1 polySurface2 polySurface1
+    4300018: Hallway_T_Right_Hallway_T_Right1 polySurface3 polySurface1
+    4300020: Hallway_T_Right_Hallway_T_Right1 polySurface9 polySurface1
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 

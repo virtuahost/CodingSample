@@ -1,0 +1,8 @@
+Install Instructions:
+---------------------
+1. Copy the NewtNewModelBuild.exe and the NewtNewModelBuild_Data folder to a folder named "C:\Program Files\Newt".
+2. Double click the NewtNewModelBuild.exe file.
+3. Select the display options based on your preference.
+4. Press Enter to launch the game.
+
+Runs on Windows XP and above. Can be ported to Mac OS by creating an application launcher using the source code in Unity.
