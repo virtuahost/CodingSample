@@ -1,0 +1,46 @@
+
+2d
+3 - switches to 3d
+
+c - adding control points
+1 - selecting first curve
+2 - selecting second curve
+0 - selecting spine
+r - editing radius
+m - shifting between normal, radial, ball offset mode
+
+a - animating
+s - toggle between between lerp/ball morph
+\ - show arcs in ball morph
+[ - reduce lerp/ball morph time
+] - increate lerp/ball morph time
+/ - move selected ball forwards
+. - move selected ball backwards
+
+
+
+3d
+3 - switch to 2d
+
+a - animating
+v - volume
+w - toggle wireframe mode
+space - move camera w/ mouse
+c - move focal point w/ mouse
+x - tilt screen w/ mouse
+z - zoom in and out w/mouse
+t - toggle textured mode
+, - decrease aplha
+. - increase alpha
+{ - decrease subdivisions
+} - increase subdivisions
+[ - decrease rotational resolution
+] - increase rotational resolution
+b - for movemnt in z axis
+4 - toggles twist free advection
+5 - toggles control polyline
+6 - Activates alternate input mode(wonky)
+j - Activates bending(hack for speeding up the application) 
+
+
+
