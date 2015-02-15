@@ -1,68 +1,56 @@
 class KalmanFilter {
   MatrixManipulator X = null;
-  MatrixManipulator F = null;
+  MatrixManipulator A = null;
   MatrixManipulator P = null;
   MatrixManipulator H = null;
   MatrixManipulator R = null;
   MatrixManipulator Z = null;
   MatrixManipulator U = null;
   MatrixManipulator K = null;
-  
-  //Equations Used:
-  //State:
-  //x(t)=Ax'(t-1)+Bu(t)
-  //A=[{1,t},{0,1}] 
-  //B=[t^2/2,t]
-  //C=[{1,0},{0,1}]      Made changes to fix issues in initial equation
-  //Error Covariance
-  //P(t)=AP(t-1)A^T+E(x)
-  //Kalman Gain:
-  //K(t)=P(t)C^T(CP(t)C^T+E(z))^-1
-  //Measurement:
-  //x'(t)=x(t)+k(t)(z'(t)-Cx(t))
-  //P'(t)=(I-K(t)C)P(t)
-  //I=Identity Matrix
-  
+  MatrixManipulator I = null;
+    
   public KalmanFilter()
   {
-    float[][] arrX = {{0,0.001}};
+    float[][] arrX = {{0,1,0.001}};
     X = new MatrixManipulator(arrX);
-    float[][] arrF = {{1,0},{0,1}};
-    F = new MatrixManipulator(arrF);
-    float[][] arrP = {{1,0},{0,1}};
+    float[][] arrA = {{1,1,0},{0,1,1},{0,0,1}};
+    A = new MatrixManipulator(arrA);
+    float[][] arrP = {{1,1,1},{1,1,1},{1,1,1}};
     P = new MatrixManipulator(arrP);
-    float[][] arrH = {{1,0},{0,1}};
+    float[][] arrH = {{1,0,0},{0,1,0},{0,0,1}};
     H = new MatrixManipulator(arrH);
-    float[][] arrR = {{1,0},{0,1}};
+    float[][] arrR = {{1,0,0},{0,1,0},{0,0,1}};
     R = new MatrixManipulator(arrR);
-    Z = new MatrixManipulator(1,2);
-    float[][] arrU = {{0.01,0.01}};
+    Z = new MatrixManipulator(3,1);
+    float[][] arrU = {{0,0.01,0}};
     U = new MatrixManipulator(arrU);
-    K = new MatrixManipulator(2,2);
+    float[][] arrI = {{1}};
+    I = new MatrixManipulator(arrI);
   }
   
   void Update(float x,float t)
   {
-     MatrixManipulator Y = new MatrixManipulator(1,2);
-     MatrixManipulator S = null;
-     float[][] arrZ = {{x,1}};
+     MatrixManipulator tempX = null;    //Temp variable to store parts of the new X calculation
+     MatrixManipulator tempK = null;        //Temp variable to store parts of the Kalman Gain filter calculation 
+     float[][] arrZ = {{x},{(x-X._arrMatrix[0][0])},{1}};
      Z = new MatrixManipulator(arrZ);
-     float[][] arrF = {{1,t},{0,1}};
-     F = new MatrixManipulator(arrF);        
-     X = X.multiply(F).add(U);
-     P = (F.multiply(P)).multiply(F.transpose());
-     S = ((H.multiply(P)).multiply(H.transpose())).add(R);
-     K = (H.multiply(P)).multiply(S.inverse());
-     Y = Z.minus(X.multiply(H));
-     X = X.add(Y.multiply(K));
-     P = P.minus(P.multiply(H.transpose()).multiply(S.inverse()).multiply(H).multiply(H));
+     float[][] arrA = {{1,t,0},{0,1,t},{0,0,1}};
+     A = new MatrixManipulator(arrA);        
+     X = X.multiply(A).add(U);            //Predict Next State
+     P = (A.multiply(P)).multiply(A.transpose());      //Predict next Prediction Error
+     tempK = ((H.multiply(P)).multiply(H.transpose())).add(R);   //Calculates the inverse part of the Gain equation
+     tempK.printMatrix();
+     K = (H.multiply(P)).multiply(tempK.inverse());      //Calculates new gain     
+//     P = I.minus(K.multiply(H)).multiply(P);    // Calculating Predcition Error
+//     tempX = Z.minus(X.multiply(H));
+//     X = X.add(tempX.multiply(K));
   }
   
   float predict(float t)
   {
-     float[][] arrF = {{1,t},{0,1}};
-     F = new MatrixManipulator(arrF);
-     MatrixManipulator X1 = X.multiply(F).add(U);
+     float[][] arrA = {{1,t,0},{0,1,t},{0,0,1}};
+     A = new MatrixManipulator(arrA);
+     MatrixManipulator X1 = X.multiply(A).add(U);
      println("t: " + t + "loc: " + X1._arrMatrix[0][0]);
      return X1._arrMatrix[0][0];
   }  
