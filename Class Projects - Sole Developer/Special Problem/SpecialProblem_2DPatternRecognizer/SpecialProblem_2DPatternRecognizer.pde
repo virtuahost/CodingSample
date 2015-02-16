@@ -100,12 +100,12 @@ void draw() {      // executed at each frame
   {
     int temp = componentSize * patternSize;
     for (int i=temp; i>=1; i--) {
-      xMani.Update(PS.cPts.get(maxComponentSize*patternSize - i).x,i);
-      yMani.Update(PS.cPts.get(maxComponentSize*patternSize - i).y,i);
+      xMani.Update(PS.cPts.get(maxComponentSize*patternSize - i),i);
+//      yMani.Update(PS.cPts.get(maxComponentSize*patternSize - i).y,i);
     }    
-    float x = xMani.predict(keeper);
-    float y = yMani.predict(keeper);
-    PS.addPt(P2(x,y));
+    pt2 P = xMani.predict(keeper);
+//    float y = yMani.predict(keeper);
+    PS.addPt(P);
     keeper = PS.cPts.size ();
   }
   if (showPts)
@@ -118,59 +118,66 @@ void draw() {      // executed at each frame
 //**************************** user actions ****************************
 void keyPressed() { // executed each time a key is pressed: sets the "keyPressed" and "key" state variables, 
   // till it is released or another key is pressed or released  
-  if (key=='c') {
-    addingPoint = !addingPoint;
-  }
-  if (key=='s') {
-    showPts = !showPts;
-  }
-  if (key=='e') {
-    PS = new BSpline();
-  }
-  if (key=='p') {
-    PrintWriter output;
-    output = createWriter("points.txt"); 
-    for (int i=0; i<PS.cPts.size (); i++) {
-      output.println(PS.cPts.get(i).x + "," + PS.cPts.get(i).y);
+  if(keyPressed)
+  {
+    if (key=='c') {
+      addingPoint = !addingPoint;
     }
-    output.flush(); 
-    output.close();
-  }
-  if(key=='1')
-  {
-    componentSize++;
-    if(componentSize > maxComponentSize-1)
-      componentSize = maxComponentSize-1;
-  }
-  if(key=='2')
-  {
-    componentSize--;
-    if(componentSize < 1)
-      componentSize = 1;
-  }
-  if (key=='g') {
-    //Code to generate curve based on repetitive element;
-    //Kalman Filter test
-    int temp = componentSize * patternSize;
-    int start = 0;
-    int end = PS.cPts.size ()/temp;
-    for(int j = 0; j < end; j ++)
+    if (key=='s') {
+      showPts = !showPts;
+    }
+    if (key=='e') {
+      PS = new BSpline();
+    }
+    if(key == 'm')
     {
-      for (int i=j*temp; i < (j*temp+temp); i++) {
-        xMani.Update(PS.cPts.get(i).x,i);
-        yMani.Update(PS.cPts.get(i).y,i);
-      }
+      componentSize = maxComponentSize;
     }
-    keeper = PS.cPts.size ();
-    float x = xMani.predict(keeper);
-    float y = yMani.predict(keeper);
-    PS.addPt(P2(x,y)); 
-    keeper = PS.cPts.size ();
-  }
-  if(key == 'i')
-  {    
-//    predictMode = !predictMode;
-    //Code to identify repititve elements
+    if (key=='p') {
+      PrintWriter output;
+      output = createWriter("points.txt"); 
+      for (int i=0; i<PS.cPts.size (); i++) {
+        output.println(PS.cPts.get(i).x + "," + PS.cPts.get(i).y);
+      }
+      output.flush(); 
+      output.close();
+    }
+    if(key=='1')
+    {
+      componentSize++;
+      if(componentSize > maxComponentSize-1)
+        componentSize = maxComponentSize-1;
+    }
+    if(key=='2')
+    {
+      componentSize--;
+      if(componentSize < 1)
+        componentSize = 1;
+    }
+    if (key=='g') {
+      //Code to generate curve based on repetitive element;
+      //Kalman Filter test
+      int temp = componentSize * patternSize;
+      int start = 0;
+      int end = PS.cPts.size ()/temp;
+      for(int j = 0; j < end; j ++)
+      {
+        for (int i=j*temp; i < (j*temp+temp); i++) {
+          xMani.Update(PS.cPts.get(i),i);
+//          yMani.Update(PS.cPts.get(i).y,i);
+        }
+      }
+      keeper = PS.cPts.size ();
+      pt2 P = xMani.predict(keeper);
+//      float y = yMani.predict(keeper);
+      PS.addPt(P); 
+      keeper = PS.cPts.size ();
+    }
+    if(key == 'i')
+    {    
+  //    predictMode = !predictMode;
+      //Code to identify repititve elements
+    }
   }
 }
 
