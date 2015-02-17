@@ -250,7 +250,7 @@ class BSpline {
 
       noFill();
       stroke(black);
-      for (int i=0; i<cPts.size (); i++) {
+      for (int i=0; i<cPts.size () - 1; i++) {
         curve.get(cIndex.get(i)).show(radCPts.get(i));
       }
       noFill();
@@ -270,10 +270,12 @@ class BSpline {
       noFill();
 
       //Show corresponding ctrl points
-      for (int i=0; i<cIndex.size (); i++) {
+      for (int i=0; i<cIndex.size () - 1; i++) {
         fill(black);
         curve.get(cIndex.get(i)).show(2);
       }
+      fill(red);
+      curve.get(cIndex.get(cIndex.size () - 1)).show(5);
 
 
       //Show curvedLoop  

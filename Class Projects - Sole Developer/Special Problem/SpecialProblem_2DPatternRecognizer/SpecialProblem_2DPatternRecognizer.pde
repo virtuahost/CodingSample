@@ -1,3 +1,8 @@
+import Jama.util.*;
+import Jama.*;
+import Jama.test.*;
+import Jama.examples.*;
+
 import papaya.*;
 
 //POC for Kalman Filter on 2D pattern recognition

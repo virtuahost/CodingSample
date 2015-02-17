@@ -1,95 +1,95 @@
 //All necessary functions for matrix manipulation.
 //Inverse function code uses excerpts from http://www.codeproject.com/Articles/405128/Matrix-operations-in-Java
 
-class MatrixManipulator {
-  public float[][] _arrMatrix;
-  public int _row;
-  public int _col;
-  
-  public MatrixManipulator(int rowProvd, int colProvd)
-  {
-    _row = rowProvd;
-    _col = colProvd;
-    _arrMatrix = new float[_col][_row];
-    for(int i =0; i < _col; i ++)
-    {
-      for(int j =0; j < _row; j ++)
-      {
-        _arrMatrix[i][j] = 0;
-      }
-    }
-  }
-  public MatrixManipulator(float[][] arrInput)
-  {
-    _col = arrInput.length;
-    _row = arrInput[0].length;
-    _arrMatrix = new float[_col][_row];
-    for(int i =0; i < _col; i++)
-    {
-      for(int j =0; j < _row; j ++)
-      {
-        _arrMatrix[i][j] = arrInput[i][j];
-      }
-    }
-  }
-  public MatrixManipulator transpose()
-  {
-    return new MatrixManipulator(Mat.transpose(this._arrMatrix));
-  }
-  public MatrixManipulator multiply(MatrixManipulator arrSecondMatrix)
-  {
-    return new MatrixManipulator(Mat.multiply(this._arrMatrix,arrSecondMatrix._arrMatrix));
-  }
-  public MatrixManipulator multiply(float val)
-  {
-    return new MatrixManipulator(Mat.multiply(this._arrMatrix,val));
-  }
-  public MatrixManipulator inverse()
-  {
-    return new MatrixManipulator(Mat.inverse(this._arrMatrix));
-  }
-  public MatrixManipulator add(MatrixManipulator arrSecondMatrix)
-  {
-    return new MatrixManipulator(Mat.sum(this._arrMatrix,arrSecondMatrix._arrMatrix));
-  }
-  public MatrixManipulator add(float val)
-  {
-    MatrixManipulator scaleVal = this.fillMatrix(val);
-    return new MatrixManipulator(Mat.sum(this._arrMatrix,scaleVal._arrMatrix));
-  }
-  public MatrixManipulator fillMatrix(float val)
-  {
-    float[][] arrTemp = new float[this._col][this._row];
-    for(int i =0; i < _col; i++)
-    {
-      for(int j =0; j < _row; j ++)
-      {
-        arrTemp[i][j] = val;
-      }        
-    }
-    return new MatrixManipulator(arrTemp);
-  }
-  public MatrixManipulator add(float val,MatrixManipulator arrSecondMatrix)
-  {
-    MatrixManipulator temp = arrSecondMatrix.multiply(val);
-    return new MatrixManipulator(Mat.sum(this._arrMatrix,temp._arrMatrix));
-  }
-  public MatrixManipulator minus(MatrixManipulator arrSecondMatrix)
-  {
-    return new MatrixManipulator(Mat.subtract(this._arrMatrix,arrSecondMatrix._arrMatrix));
-  }
-  public void printMatrix()
-  {
-    println("Matrix Start: ");
-    for(int i =0; i < _col; i++)
-    {
-      for(int j =0; j < _row; j ++)
-      {
-        println("Row: " + j + " Col: " + i + " value: " +_arrMatrix[i][j]);
-      }
-    }
-    println("Matrix End: ");
-  }
+//class MatrixManipulator {
+//  public float[][] _arrMatrix;
+//  public int _row;
+//  public int _col;
+//  
+//  public MatrixManipulator(int rowProvd, int colProvd)
+//  {
+//    _row = rowProvd;
+//    _col = colProvd;
+//    _arrMatrix = new float[_col][_row];
+//    for(int i =0; i < _col; i ++)
+//    {
+//      for(int j =0; j < _row; j ++)
+//      {
+//        _arrMatrix[i][j] = 0;
+//      }
+//    }
+//  }
+//  public MatrixManipulator(float[][] arrInput)
+//  {
+//    _col = arrInput.length;
+//    _row = arrInput[0].length;
+//    _arrMatrix = new float[_col][_row];
+//    for(int i =0; i < _col; i++)
+//    {
+//      for(int j =0; j < _row; j ++)
+//      {
+//        _arrMatrix[i][j] = arrInput[i][j];
+//      }
+//    }
+//  }
+//  public MatrixManipulator transpose()
+//  {
+//    return new MatrixManipulator(Mat.transpose(this._arrMatrix));
+//  }
+//  public MatrixManipulator multiply(MatrixManipulator arrSecondMatrix)
+//  {
+//    return new MatrixManipulator(Mat.multiply(this._arrMatrix,arrSecondMatrix._arrMatrix));
+//  }
+//  public MatrixManipulator multiply(float val)
+//  {
+//    return new MatrixManipulator(Mat.multiply(this._arrMatrix,val));
+//  }
+//  public MatrixManipulator inverse()
+//  {
+//    return new MatrixManipulator(Mat.inverse(this._arrMatrix));
+//  }
+//  public MatrixManipulator add(MatrixManipulator arrSecondMatrix)
+//  {
+//    return new MatrixManipulator(Mat.sum(this._arrMatrix,arrSecondMatrix._arrMatrix));
+//  }
+//  public MatrixManipulator add(float val)
+//  {
+//    MatrixManipulator scaleVal = this.fillMatrix(val);
+//    return new MatrixManipulator(Mat.sum(this._arrMatrix,scaleVal._arrMatrix));
+//  }
+//  public MatrixManipulator fillMatrix(float val)
+//  {
+//    float[][] arrTemp = new float[this._col][this._row];
+//    for(int i =0; i < _col; i++)
+//    {
+//      for(int j =0; j < _row; j ++)
+//      {
+//        arrTemp[i][j] = val;
+//      }        
+//    }
+//    return new MatrixManipulator(arrTemp);
+//  }
+//  public MatrixManipulator add(float val,MatrixManipulator arrSecondMatrix)
+//  {
+//    MatrixManipulator temp = arrSecondMatrix.multiply(val);
+//    return new MatrixManipulator(Mat.sum(this._arrMatrix,temp._arrMatrix));
+//  }
+//  public MatrixManipulator minus(MatrixManipulator arrSecondMatrix)
+//  {
+//    return new MatrixManipulator(Mat.subtract(this._arrMatrix,arrSecondMatrix._arrMatrix));
+//  }
+//  public void printMatrix()
+//  {
+//    println("Matrix Start: ");
+//    for(int i =0; i < _col; i++)
+//    {
+//      for(int j =0; j < _row; j ++)
+//      {
+//        println("Row: " + j + " Col: " + i + " value: " +_arrMatrix[i][j]);
+//      }
+//    }
+//    println("Matrix End: ");
+//  }
 //  public MatrixManipulator transpose()
 //  {
 //    float[][] transMatrix = new float[_row][_col];
@@ -252,4 +252,4 @@ class MatrixManipulator {
 //    }
 //    return temp;
 //  }
-}
+//}
