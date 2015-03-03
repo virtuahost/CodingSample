@@ -123,6 +123,20 @@ float angles(POLYGON Q) {  // minus sum of angle differences from center of mass
   float a=0; for (int i=0; i<min(n,Q.n); i++) a+=atan2(dot(V(A,P[i]),R(V(B,Q.P[i]))),dot(V(A,P[i]),V(B,Q.P[i])));
   return a=a/n;
   } 
+void drawVec(POLYGON Q)
+{
+  pt A=centerV(); pt B=Q.centerV(); 
+  vec AO = V(A,P[0]);
+//  println(A.x + ", " + A.y + ", " + AO.x + ", " + AO.y + ", " + P[0].x + ", " + P[0].y);
+//  line(A.x,A.y,AO.x,AO.y);
+  AO.showArrowAt(A);
+  vec BO = V(B,Q.P[0]);
+//  line(B.x,B.y,BO.x,BO.y);
+  BO.showArrowAt(B);
+  vec BR = R(V(B,Q.P[0]));
+//  line(B.x,B.y,BR.x,BR.y);
+  BR.showArrowAt(B);
+}
 
 
 void copyFrom(POLYGON Q) {n=Q.n; for (int i=0; i<n; i++) P[i].setTo(Q.P[i]);}

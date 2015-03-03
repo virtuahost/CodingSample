@@ -191,6 +191,7 @@ vec2 W(float u, vec2 U, float v, vec2 V) {return W(S(u,U),S(v,V));}             
 vec2 R2(vec2 V) {return new vec2(-V.y,V.x);};                                                             // V turned right 90 degrees (as seen on screen)
 vec2 R2(vec2 V, float a) {float c=cos(a), s=sin(a); return(new vec2(V.x*c-V.y*s,V.x*s+V.y*c)); };                                     // V rotated by a radians
 vec2 S(float s,vec2 V) {return new vec2(s*V.x,s*V.y);};                                                  // sV
+pt2 S(float s, pt2 A) {return new pt2(s*A.x,s*A.y); };                                                  // Weighted point: sA
 vec2 Reflection(vec2 V, vec2 N) { return W(V,-2.*dot(V,N),N);};                                          // reflection
 vec2 M(vec2 V) { return V2(-V.x,-V.y); }                                                                  // -V
 

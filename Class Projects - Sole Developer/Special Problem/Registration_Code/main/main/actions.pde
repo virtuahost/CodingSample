@@ -16,6 +16,7 @@
     strokeWeight(4); stroke(red); fill(red);       Q.drawPoints(4);  noFill(); Q.drawEdges();
     strokeWeight(4); stroke(green); fill(green);   P.drawPoints(4);  noFill(); P.drawEdges();
     fill(dgreen); P.writePointIDs(); fill(dred); Q.writePointIDs();    
+    if(draw){fill(magenta);P.drawVec(Q);noFill();}
 //    text("dd="+str(dd),width-100,12);
     };
 

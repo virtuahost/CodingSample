@@ -9,6 +9,7 @@ class BSpline {
   boolean radMode = false; // to enable editing radius of control points
   int cType = 1;
   color curveClr = green;
+  float circleRadius = 10;
 
   BSpline() { 
     cPts = new ArrayList<pt2>();
@@ -236,20 +237,20 @@ class BSpline {
     }
   }
 
-  void showPts() {
+  void showPts(color reqdClr) {
 
     if (!radMode) {
       noFill();
-      stroke(black);
+      stroke(reqdClr);
       for (int i=0; i<cPts.size (); i++) {
         cPts.get(i).show(5);
-        text("Points: x: " + cPts.get(i).x + " , y: " + cPts.get(i).y, 500, 100 + i*10);
+        //        text("Points: x: " + cPts.get(i).x + " , y: " + cPts.get(i).y, 500, 100 + i*10);
       }
       noFill();
     } else {
 
       noFill();
-      stroke(black);
+      stroke(reqdClr);
       for (int i=0; i<cPts.size () - 1; i++) {
         curve.get(cIndex.get(i)).show(radCPts.get(i));
       }
@@ -257,11 +258,11 @@ class BSpline {
     }
   }
 
-  void showCurve(int curveType) {
+  void showCurve(int curveType, color reqdClr) {
     if (curve.size() > 1 ) {
 
-      fill(curveClr);
-      pen(black, 1);
+      fill(reqdClr);
+      pen(reqdClr, 1);
       for (int i=0; i<curve.size () - 1; i++) {
         //curve.get(i).show(3);
         edge(curve.get(i), curve.get(i+1));
@@ -271,40 +272,40 @@ class BSpline {
 
       //Show corresponding ctrl points
       for (int i=0; i<cIndex.size () - 1; i++) {
-        fill(black);
+        fill(reqdClr);
         curve.get(cIndex.get(i)).show(2);
       }
-      fill(red);
-      curve.get(cIndex.get(cIndex.size () - 1)).show(5);
+      //      fill(red);
+      //      curve.get(cIndex.get(cIndex.size () - 1)).show(5);
 
 
       //Show curvedLoop  
-//      fill(curveClr);
-//      noStroke();
-//
-//      if (curveType == 0) {
-//
-//        fill(red); 
-//        stroke(red);
-//        for (int i=0; i<cLoopNormal.size ()-1; i++) {
-//          //cLoopNormal.get(i).show(2); 
-//          edge(cLoopNormal.get(i), cLoopNormal.get(i+1));
-//        }
-//        edge(cLoopNormal.get(cLoopNormal.size()-1), cLoopNormal.get(0));
-//      } else if (curveType == 1) {
-//        fill(dgreen); 
-//        stroke(dgreen);
-//        for (int i=0; i<cLoopRadial.size () - 1; i++) {
-//          //cLoopRadial.get(i).show(2); 
-//          edge(cLoopRadial.get(i), cLoopRadial.get(i+1));
-//        }
-//        edge(cLoopRadial.get(cLoopRadial.size()-1), cLoopRadial.get(0));
-//      } else if (curveType == 2) {
-//        fill(blue);
-//        for (int i=0; i<cLoopBall.size (); i++) {
-//          cLoopBall.get(i).show(2);
-//        }
-//      }
+      //      fill(curveClr);
+      //      noStroke();
+      //
+      //      if (curveType == 0) {
+      //
+      //        fill(red); 
+      //        stroke(red);
+      //        for (int i=0; i<cLoopNormal.size ()-1; i++) {
+      //          //cLoopNormal.get(i).show(2); 
+      //          edge(cLoopNormal.get(i), cLoopNormal.get(i+1));
+      //        }
+      //        edge(cLoopNormal.get(cLoopNormal.size()-1), cLoopNormal.get(0));
+      //      } else if (curveType == 1) {
+      //        fill(dgreen); 
+      //        stroke(dgreen);
+      //        for (int i=0; i<cLoopRadial.size () - 1; i++) {
+      //          //cLoopRadial.get(i).show(2); 
+      //          edge(cLoopRadial.get(i), cLoopRadial.get(i+1));
+      //        }
+      //        edge(cLoopRadial.get(cLoopRadial.size()-1), cLoopRadial.get(0));
+      //      } else if (curveType == 2) {
+      //        fill(blue);
+      //        for (int i=0; i<cLoopBall.size (); i++) {
+      //          cLoopBall.get(i).show(2);
+      //        }
+      //      }
     }
   }
 
@@ -412,11 +413,106 @@ class BSpline {
     ArrayList<pt2> fa;
     ArrayList<pt2> tCap = new ArrayList<pt2>();
     ArrayList<pt2> bCap = new ArrayList<pt2>();
-    println("test");
     this.curve = spine;
     fa = makeCurve(spine, rad, curveType, tCap, bCap);
 
     return fa;
   }
+
+  float distances(BSpline Q) {  // vertex registration
+    pt2 A=centerV(); 
+    pt2 B=Q.centerV();
+    float s=0; 
+    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) s+=dot(V2(A, cPts.get(i)), R2(V2(B, Q.cPts.get(i))));
+    float c=0; 
+    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) c+=dot(V2(A, cPts.get(i)), V2(B, Q.cPts.get(i)));
+    return atan2(s, c);
+  } 
+
+  float moments(BSpline Q) {  // minus sum of moments
+    pt2 A=centerV(); 
+    pt2 B=Q.centerV(); 
+    float d, a=0, D=0; 
+    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) {
+      d=sqrt(d2(A, cPts.get(i))*d2(B, Q.cPts.get(i))); 
+      a+=d*atan2(dot(V2(A, cPts.get(i)), R2(V2(B, Q.cPts.get(i)))), dot(V2(A, cPts.get(i)), V2(B, Q.cPts.get(i)))); 
+      D+=d;
+    }
+    return a=a/D;
+  } 
+
+  float angles(BSpline Q) {  // minus sum of angle differences from center of mass 
+    pt2 A=centerV(); 
+    pt2 B=Q.centerV(); 
+    float a=0; 
+    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) a+=atan2(dot(V2(A, cPts.get(i)), R2(V2(B, Q.cPts.get(i)))), dot(V2(A, cPts.get(i)), V2(B, Q.cPts.get(i))));
+    return a=a/cPts.size ();
+  } 
+
+  void registerTo(BSpline Q, float a) {  // vertex registration
+    pt2 A=centerV(); 
+    pt2 B=Q.centerV(); 
+    translatePoints(V2(A, B));
+    rotatePoints(a, B);
+  } 
+
+  void translatePoints(vec2 V) {
+    ArrayList<pt2> temp = new ArrayList<pt2>();
+    for (int i=0; i<cPts.size (); i++)temp.add(P2(cPts.get(i).x, cPts.get(i).y));
+    cPts.clear();
+    for (int i=0; i<temp.size (); i++) {
+//      line(temp.get(i).x, temp.get(i).y, temp.get(i).add(V).x, temp.get(i).add(V).y);
+      addPt(temp.get(i).add(V));
+    }
+  }; 
+  void rotatePoints(float aa, pt2 G) {
+    ArrayList<pt2> temp = new ArrayList<pt2>();
+    for (int i=0; i<cPts.size (); i++)temp.add(P2(cPts.get(i).x, cPts.get(i).y));
+    cPts.clear();
+    for (int i=0; i<temp.size (); i++) addPt(temp.get(i).rotate(aa, G));
+  };
+  pt2 centerV() {
+    pt2 G=P2(); 
+    for (int i=0; i<cPts.size (); i++) G.add(cPts.get(i).x, cPts.get(i).y); 
+    return S(1./cPts.size (), G);
+  }
+  pt2 screenCenter() {
+    return P2(height/2, height/2);
+  }
+
+  void copyTo(BSpline Q)
+  {
+    cPts.clear();
+    for (int i=0; i<Q.cPts.size (); i++)addPt(P2(Q.cPts.get(i).x, Q.cPts.get(i).y));
+  }
+  
+  //Genom code based on point signature
+  //Create circle/sphere around the control point. Let the control circle intersect the created curve. 
+  //The intersected curve C will define a plane based on tangent and normal of the curve. 
+  //Use weighted average to find center. 
+  //Create a projection of the curve at the control point along the normal to the intersected curve.
+  //Create signal profile based on distance of   
+  ArrayList<Signature> arrptSignature = new ArrayList<Signature>();
+  void createGenom()
+  {
+    for (int i=0; i<cPts.size (); i++)
+    {
+      ArrayList<pt2> intersectCurve = new ArrayList<pt2>();
+      pt2 rp = P2(cPts.get(i).x,cPts.get(i).y);
+      for (int j=0; j<curve.size () - 1; j++) {
+        if(d2(rp,curve.get(j))<=circleRadius)
+        {
+          vec2 curTVec;
+          vec2 curNorm;
+          intersectCurve.add(P2(curve.get(j).x,curve.get(j).y));
+          //Find unit tangent at each point
+          curTVec = U(V2(curve.get(j), curve.get(j+1)));
+    
+          //Find unit normal
+          curNorm = U(R2(curTVec));
+        }
+      }
+    }
+  } 
 }
 

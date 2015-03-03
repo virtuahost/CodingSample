@@ -1,4 +1,4 @@
-
+Boolean draw = false;
   
 void keyPressed() {  
   if (key==' ') showHelpText=!showHelpText ; 
@@ -27,7 +27,7 @@ void keyPressed() {
   if (key=='.') dd=min(2,dd+1);
   if (key=='1') {edited=1;}  // used to set mode when mouse pressed
   if (key=='2') {edited=2;}  // used to set mode when mouse pressed
-
+  if(key=='8'){draw=!draw;}
   };     
 
 void showHelp() {
