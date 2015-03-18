@@ -2,6 +2,7 @@ import Jama.util.*;
 import Jama.*;
 import Jama.test.*;
 import Jama.examples.*;
+import java.util.*;
 
 import papaya.*;
 
@@ -12,7 +13,7 @@ import papaya.*;
 color black=#000000, white=#FFFFFF, // set more colors using Menu >  Tools > Color Selector
 red=#FF0000, grey=#818181, green=#00FF01, blue=#0300FF, yellow=#FEFF00, cyan=#00FDFF, magenta=#FF00FB, 
 orange=#FFA600, brown=#B46005, metal=#B5CCDE, dgreen=#157901, lgrey = #D3D3D3;
-BSpline PS, QS, RS;
+BSpline PS, QS, RS, AS;
 int scp = -1; //selected control point
 int m = 2; // m used for changing curve offset modes, 0 = normal, 1 = radial, 2 = ball, 3 = all three combined
 boolean animating=false; // must be set by application during animations to force frame capture
@@ -20,9 +21,12 @@ boolean animating=false; // must be set by application during animations to forc
 float mirrorLine;
 int sel=-1;
 int face = -1;
+int lnCurv = 0;
 float f=0;
-Boolean edgeMode = false, addingPoint=false, showPts=true, register = false, angles = true, moments = true, distances = true;
+Boolean edgeMode = false, addingPoint=false, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = false;
 pt2 edgeSt;
+pt2 cutEdgeSt;
+pt2 cutEdgeEnd;
 float keeper = 0.0f;
 int componentSize = 1;
 int maxComponentSize = 9;
@@ -37,6 +41,7 @@ void setup() {               // executed once at the begining
   PS = new BSpline(); 
   QS = new BSpline();
   RS = new BSpline();
+  AS = new BSpline();
   //  PS.addPt(P2(73.0, 693.0));
   //  PS.addPt(P2(47.0, 578.0));
   //  PS.addPt(P2(39.0, 476.0));
@@ -126,35 +131,51 @@ void draw() {      // executed at each frame
   if (showPts)
   {
     PS.showPts(green);
-    QS.showPts(red);
-  }
+    if (!selMod)
+    {
+      QS.showPts(red);
+    } 
+  }  
   PS.showCurve(0, green);
-  QS.showCurve(0, red);
+  if (!selMod)
+  {
+    QS.showCurve(0, red);
+  } else
+  {
+    AS.showCurve(0, cyan);
+    PS.showCurveDebug(0,red,PS.startX,PS.endX);
+  }
   if (register) 
   {
-    float a;   
-    if (distances)
-    {     
-      RS.copyTo(PS);
-      a=RS.distances(QS);
-      RS.registerTo(QS, a);
-      RS.showCurve(0, cyan);
-    }  
-    if (angles)
-    {    
-      RS.copyTo(PS);
-      a=PS.angles(QS);
-      RS.registerTo(QS, a);
-      RS.showCurve(0, metal);
+    if (!selMod)
+    {
+      float a;   
+      if (distances)
+      {     
+        RS.copyTo(PS);
+        a=RS.distances(QS);
+        RS.registerTo(QS, a);
+        RS.showCurve(0, cyan);
+      }  
+      if (angles)
+      {    
+        RS.copyTo(PS);
+        a=PS.angles(QS);
+        RS.registerTo(QS, a);
+        RS.showCurve(0, metal);
+      }
+      if (moments)
+      {    
+        RS.copyTo(PS);
+        a=PS.moments(QS);
+        RS.registerTo(QS, a);
+        RS.showCurve(0, magenta);
+      }
+      RS = new BSpline();
+    } else
+    {
+      PS.registerAndDraw(AS,metal);
     }
-    if (moments)
-    {    
-      RS.copyTo(PS);
-      a=PS.moments(QS);
-      RS.registerTo(QS, a);
-      RS.showCurve(0, magenta);
-    }
-    RS = new BSpline();
   }
   noFill();
   //      break;  
@@ -178,6 +199,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     if (key=='c') {
       PS = new BSpline();
       QS = new BSpline();
+      AS = new BSpline();
+      cutEdgeEnd = P2();
+      cutEdgeSt = P2();
+      lnCurv = 0;
     }
     if (key=='1')
     {
@@ -185,7 +210,17 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     }
     if (key=='2')
     {
-      selCurve = 2;
+      if (!selMod)
+      {
+        selCurve = 2;
+      } else
+      {
+        selCurve = 3;
+        AS = new BSpline();
+        cutEdgeEnd = P2();
+        cutEdgeSt = P2();
+        lnCurv = 0;
+      }
     }
     if (key=='3')
     {
@@ -208,6 +243,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     {
       //      selCurve = 4;
     }
+    if (key == 'p')
+    {
+      selMod = !selMod;
+    }
   }
 }
 
@@ -217,6 +256,19 @@ void mousePressed() {  // executed when the mouse is pressed
     edgeSt = Mouse2();
     if (selCurve == 1)PS.addPt(Mouse2());
     if (selCurve == 2)QS.addPt(Mouse2());
+    if(selCurve == 3 && lnCurv < 2)
+    {
+      lnCurv++;
+      if(lnCurv == 2)
+      {
+        cutEdgeEnd = edgeSt;
+        AS = PS.generateCurvePiece(cutEdgeSt,cutEdgeEnd);
+      }
+      else
+      {
+        cutEdgeSt = edgeSt;
+      }      
+    }
   }
   if (selCurve == 1)scp = PS.pickCPt(Mouse2());
   if (selCurve == 2)scp = QS.pickCPt(Mouse2());

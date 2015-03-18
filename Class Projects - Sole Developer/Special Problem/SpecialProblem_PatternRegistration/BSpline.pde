@@ -258,6 +258,79 @@ class BSpline {
     }
   }
 
+  BSpline generateCurvePiece(pt2 x, pt2 y)
+  {
+    BSpline output = new BSpline();
+    if (curve.size() > 1 ) {
+      pt2 tempStart = P2();
+      pt2 tempEnd = P2();
+      int start = -1;
+      int end = -1;
+//      println("Begin");
+      for (int i=0; i<curve.size (); i++) {
+        if (i == 0)
+        {          
+//          tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
+          tempStart = P2(curve.get(i));
+          start = i;
+//          tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
+          tempEnd = P2(curve.get(i));
+          end = i;
+        } else
+        {
+//          pt2 temp1 = projectionOnLine(x, curve.get(i), curve.get(i+1));
+//          pt2 temp2 = projectionOnLine(y, curve.get(i), curve.get(i+1));
+//          if (d(x, tempStart) > d(x,temp1))
+          if (d(x, tempStart) > d(x,curve.get(i)))
+          {         
+//            println("Start: " + start + "val: " + d2(x, tempStart) + ", " +  d2(x,temp1));
+//            tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
+            tempStart = P2(curve.get(i));
+            start = i;   
+          }
+//          if (d(y, tempEnd) > d(y,temp2))
+          if (d(y, tempEnd) > d(y,curve.get(i)))
+          {
+//            println("End: " + end + "val: " + d2(y, tempEnd) + ", " +  d2(y,temp2));
+//            tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
+            tempEnd = P2(curve.get(i));
+            end = i;
+          }
+        }
+      }
+//      println(curve.size());
+//      println(start);
+//      println(end);
+//      println("Finish");
+      this.startX = start;
+      this.endX = end;
+      output.curve.add(tempStart);
+      for (int i=start; i<=end; i++)
+      {
+        output.curve.add(P2(curve.get(i)));
+      }
+      output.curve.add(tempEnd);
+    }
+
+    return output;
+  }
+  
+  int startX = -1;
+  int endX = -1;
+  void showCurveDebug(int curveType, color reqdClr,int start, int end) {
+    if (curve.size() > 1 ) {
+
+      fill(reqdClr);
+      pen(reqdClr, 1);
+      for (int i=start; i<end; i++) {
+        //curve.get(i).show(3);
+        edge(curve.get(i), curve.get(i+1));
+      }
+      //curve.get(curve.size() - 1).show(3);
+      noFill();
+    }
+  }
+
   void showCurve(int curveType, color reqdClr) {
     if (curve.size() > 1 ) {
 
@@ -461,7 +534,7 @@ class BSpline {
     for (int i=0; i<cPts.size (); i++)temp.add(P2(cPts.get(i).x, cPts.get(i).y));
     cPts.clear();
     for (int i=0; i<temp.size (); i++) {
-//      line(temp.get(i).x, temp.get(i).y, temp.get(i).add(V).x, temp.get(i).add(V).y);
+      //      line(temp.get(i).x, temp.get(i).y, temp.get(i).add(V).x, temp.get(i).add(V).y);
       addPt(temp.get(i).add(V));
     }
   }; 
@@ -485,7 +558,23 @@ class BSpline {
     cPts.clear();
     for (int i=0; i<Q.cPts.size (); i++)addPt(P2(Q.cPts.get(i).x, Q.cPts.get(i).y));
   }
-  
+
+  void registerAndDraw(BSpline Q, color reqdCol)
+  {
+    pt2 A=centerV(); 
+    pt2 B=Q.centerV();
+    float s=0; 
+    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) s+=dot(V2(A, cPts.get(i)), R2(V2(B, Q.cPts.get(i))));
+    float c=0; 
+    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) c+=dot(V2(A, cPts.get(i)), V2(B, Q.cPts.get(i)));
+    float a = atan2(s, c);
+     
+    translatePoints(V2(A, B));
+    rotatePoints(a, B);
+    
+    showCurve(0,reqdCol);
+  }
+
   //Genom code based on point signature
   //Create circle/sphere around the control point. Let the control circle intersect the created curve. 
   //The intersected curve C will define a plane based on tangent and normal of the curve. 
@@ -498,21 +587,21 @@ class BSpline {
     for (int i=0; i<cPts.size (); i++)
     {
       ArrayList<pt2> intersectCurve = new ArrayList<pt2>();
-      pt2 rp = P2(cPts.get(i).x,cPts.get(i).y);
+      pt2 rp = P2(cPts.get(i).x, cPts.get(i).y);
       for (int j=0; j<curve.size () - 1; j++) {
-        if(d2(rp,curve.get(j))<=circleRadius)
+        if (d2(rp, curve.get(j))<=circleRadius)
         {
           vec2 curTVec;
           vec2 curNorm;
-          intersectCurve.add(P2(curve.get(j).x,curve.get(j).y));
+          intersectCurve.add(P2(curve.get(j).x, curve.get(j).y));
           //Find unit tangent at each point
           curTVec = U(V2(curve.get(j), curve.get(j+1)));
-    
+
           //Find unit normal
           curNorm = U(R2(curTVec));
         }
       }
     }
-  } 
+  }
 }
 
