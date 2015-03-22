@@ -23,7 +23,7 @@ int sel=-1;
 int face = -1;
 int lnCurv = 0;
 float f=0;
-Boolean edgeMode = false, addingPoint=false, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = false;
+Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true;
 pt2 edgeSt;
 pt2 cutEdgeSt;
 pt2 cutEdgeEnd;
@@ -142,8 +142,8 @@ void draw() {      // executed at each frame
     QS.showCurve(0, red);
   } else
   {
-    AS.showCurve(0, cyan);
-    PS.showCurveDebug(0,red,PS.startX,PS.endX);
+    AS.showCurve(0, red);
+    //PS.showCurveDebug(0,red,PS.startX,PS.endX);
   }
   if (register) 
   {
@@ -174,7 +174,7 @@ void draw() {      // executed at each frame
       RS = new BSpline();
     } else
     {
-      PS.registerAndDraw(AS,metal);
+      PS.registerAndDraw(AS,magenta);
     }
   }
   noFill();

@@ -561,18 +561,130 @@ class BSpline {
 
   void registerAndDraw(BSpline Q, color reqdCol)
   {
-    pt2 A=centerV(); 
-    pt2 B=Q.centerV();
+    int curvSize = Q.curve.size();
+//    for (int i=0; i<curve.size ()-curvSize; i++) {
+      BSpline tempS = new BSpline();
+//      tempS.copyCurve(this,i,i+curvSize-1);
+//       tempS.copyCurve(this,startX,startX+curvSize-1);
+       tempS.copyCurve(this,0,curvSize-1);
+//      float a = Q.distancesCurve(tempS);
+//      float a = Q.anglesCurve(tempS);
+//      float a = Q.momentsCurve(tempS);
+//      tempS.registerToCurve(Q,a);
+      if(tempS.isSameCurve(Q))tempS.showCurve(0,reqdCol);
+//      tempS.showCurve(0,reqdCol);
+//    }
+  }
+  
+  Boolean isSameCurve(BSpline Q)
+  {
+    Boolean result = true;
+    float a = Q.distancesCurve(this);
+    int isNotInThreshold = 0;
+    pt2 A=centerVCurve(); 
+    pt2 B=Q.centerVCurve(); 
+    ArrayList<pt2> temp = new ArrayList<pt2>();
+    for (int i=0; i<curve.size (); i++)
+    {
+      temp.add(P2(curve.get(i).x, curve.get(i).y).add(V2(A, B)));//.rotate(a, B));
+//      temp.add(P2(curve.get(i).x, curve.get(i).y));
+    }
+    for(int i = 1; i < Q.curve.size()-2;i++)
+    {
+      pt2 P1 =P2(Q.curve.get(i-1));
+      pt2 P2 =P2(Q.curve.get(i));
+      pt2 P3 =P2(Q.curve.get(i+1));
+      vec2 V = V2(P2, P1);
+      vec2 W = V2(P3,P2);
+      
+      pt2 P11 =P2(temp.get(i-1));
+      pt2 P21 =P2(temp.get(i));
+      pt2 P31 =P2(temp.get(i+1));
+      vec2 V1 = V2(P21, P11);
+      vec2 W1 = V2(P31, P21);
+      float a1 = positive(angle(W,V));
+      float a2 = positive(angle(W1,V1));
+      println(a1-a2);
+      if(a1-a2 > 0.05 && a1-a2 <-0.05)
+//      if(a1!=a2)
+      {
+        isNotInThreshold++;
+      }  
+      println(isNotInThreshold);
+      if(isNotInThreshold > 10)
+      {
+        result = false;
+        break;
+      }    
+    }
+    return result;
+  }
+  
+  void registerToCurve(BSpline Q, float a) {  // vertex registration
+    pt2 A=centerVCurve(); 
+    pt2 B=Q.centerVCurve(); 
+    translatePointsCurve(V2(A, B));
+    rotatePointsCurve(a, B);
+  } 
+
+  void translatePointsCurve(vec2 V) {
+    ArrayList<pt2> temp = new ArrayList<pt2>();
+    for (int i=0; i<curve.size (); i++)temp.add(P2(curve.get(i).x, curve.get(i).y));
+    curve.clear();
+    for (int i=0; i<temp.size (); i++) {
+      curve.add(temp.get(i).add(V));
+    }
+  }; 
+  void rotatePointsCurve(float aa, pt2 G) {
+    ArrayList<pt2> temp = new ArrayList<pt2>();
+    for (int i=0; i<curve.size (); i++)temp.add(P2(curve.get(i).x, curve.get(i).y));
+    curve.clear();
+    for (int i=0; i<temp.size (); i++) curve.add(temp.get(i).rotate(aa, G));
+  };
+  
+  pt2 centerVCurve() {
+    pt2 G=P2(); 
+    for (int i=0; i<curve.size (); i++) G.add(curve.get(i).x, curve.get(i).y); 
+    return S(1./curve.size (), G);
+  }
+  
+  float distancesCurve(BSpline Q) {  // vertex registration
+    pt2 A=centerVCurve(); 
+    pt2 B=Q.centerVCurve();
     float s=0; 
-    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) s+=dot(V2(A, cPts.get(i)), R2(V2(B, Q.cPts.get(i))));
+    for (int i=0; i<min (curve.size (), Q.curve.size()); i++) s+=dot(V2(A, curve.get(i)), R2(V2(B, Q.curve.get(i))));
     float c=0; 
-    for (int i=0; i<min (cPts.size (), Q.cPts.size()); i++) c+=dot(V2(A, cPts.get(i)), V2(B, Q.cPts.get(i)));
-    float a = atan2(s, c);
-     
-    translatePoints(V2(A, B));
-    rotatePoints(a, B);
-    
-    showCurve(0,reqdCol);
+    for (int i=0; i<min (curve.size (), Q.curve.size()); i++) c+=dot(V2(A, curve.get(i)), V2(B, Q.curve.get(i)));
+    return atan2(s, c);
+  } 
+  
+  float momentsCurve(BSpline Q) {  // minus sum of moments
+    pt2 A=centerVCurve(); 
+    pt2 B=Q.centerVCurve(); 
+    float d, a=0, D=0; 
+    for (int i=0; i<min (curve.size (), Q.curve.size()); i++) {
+      d=sqrt(d2(A, curve.get(i))*d2(B, Q.curve.get(i))); 
+      a+=d*atan2(dot(V2(A, curve.get(i)), R2(V2(B, Q.curve.get(i)))), dot(V2(A, curve.get(i)), V2(B, Q.curve.get(i)))); 
+      D+=d;
+    }
+    return a=a/D;
+  } 
+
+  float anglesCurve(BSpline Q) {  // minus sum of angle differences from center of mass 
+    pt2 A=centerVCurve(); 
+    pt2 B=Q.centerVCurve(); 
+    float a=0; 
+    for (int i=0; i<min (curve.size (), Q.curve.size()); i++) a+=atan2(dot(V2(A, curve.get(i)), R2(V2(B, Q.curve.get(i)))), dot(V2(A, curve.get(i)), V2(B, Q.curve.get(i))));
+    return a=a/curve.size ();
+  } 
+  
+  void copyCurve(BSpline Q, int start, int end)
+  {
+    curve.clear();
+    for (int i=start; i<=end; i++)
+    {
+      curve.add(P2(Q.curve.get(i)));
+    }
   }
 
   //Genom code based on point signature
