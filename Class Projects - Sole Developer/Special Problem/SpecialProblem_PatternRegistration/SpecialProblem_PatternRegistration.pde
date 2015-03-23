@@ -23,7 +23,7 @@ int sel=-1;
 int face = -1;
 int lnCurv = 0;
 float f=0;
-Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true;
+Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false;
 pt2 edgeSt;
 pt2 cutEdgeSt;
 pt2 cutEdgeEnd;
@@ -32,6 +32,7 @@ int componentSize = 1;
 int maxComponentSize = 9;
 int patternSize = 17;
 int selCurve = 1;
+int errorCnt = 1;
 
 //**************************** initialization ****************************
 void setup() {               // executed once at the begining 
@@ -177,6 +178,8 @@ void draw() {      // executed at each frame
       PS.registerAndDraw(AS,magenta);
     }
   }
+  fill(black);
+  text("Use = and - to increase error tolerance. Error tolerance is clamped between 1 and 10.\n Current Error Count = " + errorCnt,1200,100);
   noFill();
   //      break;  
   //    default:
@@ -197,12 +200,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
       showPts = !showPts;
     }
     if (key=='c') {
-      PS = new BSpline();
-      QS = new BSpline();
-      AS = new BSpline();
-      cutEdgeEnd = P2();
-      cutEdgeSt = P2();
-      lnCurv = 0;
+      clearAll();
     }
     if (key=='1')
     {
@@ -234,6 +232,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     {
       moments = !moments;
     }
+    if(key=='6')
+    {
+      registrationOff = !registrationOff;
+    }
     if (key=='r')
     {
       register = !register;
@@ -242,12 +244,57 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     if (key=='f')
     {
       //      selCurve = 4;
+      switchGraphMode = !switchGraphMode;
+      registrationOff = true;
     }
     if (key == 'p')
     {
       selMod = !selMod;
     }
+    if (key == '=')
+    {
+      errorCnt = (errorCnt == 10?10:errorCnt+1);
+    }
+    if (key == '-')
+    {
+      errorCnt = (errorCnt == 1?1:errorCnt-1);
+    }
+    if(key == 't')
+    {
+      clearAll();
+      for (int i = 0; i < maxComponentSize; i ++)
+      {
+        PS.addPt(P2(40.0 + i*70, 292.0));    //0
+        PS.addPt(P2(55.0 + i*70, 293.0));    //1
+        PS.addPt(P2(64.0 + i*70, 283.0));    //2
+        PS.addPt(P2(60.0 + i*70, 268.0));    //3
+        PS.addPt(P2(50.0 + i*70, 259.0));    //4
+        PS.addPt(P2(42.0 + i*70, 238.0));    //5
+        PS.addPt(P2(48.0 + i*70, 219.0));    //6
+        PS.addPt(P2(64.0 + i*70, 207.0));    //7
+        PS.addPt(P2(90.0 + i*70, 219.0));    //8
+        PS.addPt(P2(101.0 + i*70, 243.0));   //9
+        PS.addPt(P2(96.0 + i*70, 262.0));    //10  
+        PS.addPt(P2(81.0 + i*70, 253.0));    //11
+        PS.addPt(P2(76.0 + i*70, 235.0));    //12
+        PS.addPt(P2(65.0 + i*70, 248.0));    //13
+        PS.addPt(P2(71.0 + i*70, 263.0));    //14
+        PS.addPt(P2(77.0 + i*70, 279.0));    //15
+        PS.addPt(P2(88.0 + i*70, 283.0));    //16
+        PS.addPt(P2(102.0 + i*70, 285.0));   //17
+      }
+    }
   }
+}
+
+void clearAll()
+{
+  PS = new BSpline();
+  QS = new BSpline();
+  AS = new BSpline();
+  cutEdgeEnd = P2();
+  cutEdgeSt = P2();
+  lnCurv = 0;
 }
 
 void mousePressed() {  // executed when the mouse is pressed

@@ -10,6 +10,7 @@ class BSpline {
   int cType = 1;
   color curveClr = green;
   float circleRadius = 10;
+  int isNotInThreshold = 0;
 
   BSpline() { 
     cPts = new ArrayList<pt2>();
@@ -266,42 +267,42 @@ class BSpline {
       pt2 tempEnd = P2();
       int start = -1;
       int end = -1;
-//      println("Begin");
+      //      println("Begin");
       for (int i=0; i<curve.size (); i++) {
         if (i == 0)
         {          
-//          tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
+          //          tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
           tempStart = P2(curve.get(i));
           start = i;
-//          tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
+          //          tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
           tempEnd = P2(curve.get(i));
           end = i;
         } else
         {
-//          pt2 temp1 = projectionOnLine(x, curve.get(i), curve.get(i+1));
-//          pt2 temp2 = projectionOnLine(y, curve.get(i), curve.get(i+1));
-//          if (d(x, tempStart) > d(x,temp1))
-          if (d(x, tempStart) > d(x,curve.get(i)))
+          //          pt2 temp1 = projectionOnLine(x, curve.get(i), curve.get(i+1));
+          //          pt2 temp2 = projectionOnLine(y, curve.get(i), curve.get(i+1));
+          //          if (d(x, tempStart) > d(x,temp1))
+          if (d(x, tempStart) > d(x, curve.get(i)))
           {         
-//            println("Start: " + start + "val: " + d2(x, tempStart) + ", " +  d2(x,temp1));
-//            tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
+            //            println("Start: " + start + "val: " + d2(x, tempStart) + ", " +  d2(x,temp1));
+            //            tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
             tempStart = P2(curve.get(i));
-            start = i;   
+            start = i;
           }
-//          if (d(y, tempEnd) > d(y,temp2))
-          if (d(y, tempEnd) > d(y,curve.get(i)))
+          //          if (d(y, tempEnd) > d(y,temp2))
+          if (d(y, tempEnd) > d(y, curve.get(i)))
           {
-//            println("End: " + end + "val: " + d2(y, tempEnd) + ", " +  d2(y,temp2));
-//            tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
+            //            println("End: " + end + "val: " + d2(y, tempEnd) + ", " +  d2(y,temp2));
+            //            tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
             tempEnd = P2(curve.get(i));
             end = i;
           }
         }
       }
-//      println(curve.size());
-//      println(start);
-//      println(end);
-//      println("Finish");
+      //      println(curve.size());
+      //      println(start);
+      //      println(end);
+      //      println("Finish");
       this.startX = start;
       this.endX = end;
       output.curve.add(tempStart);
@@ -314,10 +315,10 @@ class BSpline {
 
     return output;
   }
-  
+
   int startX = -1;
   int endX = -1;
-  void showCurveDebug(int curveType, color reqdClr,int start, int end) {
+  void showCurveDebug(int curveType, color reqdClr, int start, int end) {
     if (curve.size() > 1 ) {
 
       fill(reqdClr);
@@ -562,64 +563,107 @@ class BSpline {
   void registerAndDraw(BSpline Q, color reqdCol)
   {
     int curvSize = Q.curve.size();
-//    for (int i=0; i<curve.size ()-curvSize; i++) {
+    int lastCurveThreshold = -1;
+    for (int i=0; i<curve.size ()-curvSize; i++) {
       BSpline tempS = new BSpline();
-//      tempS.copyCurve(this,i,i+curvSize-1);
-//       tempS.copyCurve(this,startX,startX+curvSize-1);
-       tempS.copyCurve(this,0,curvSize-1);
-//      float a = Q.distancesCurve(tempS);
-//      float a = Q.anglesCurve(tempS);
-//      float a = Q.momentsCurve(tempS);
-//      tempS.registerToCurve(Q,a);
-      if(tempS.isSameCurve(Q))tempS.showCurve(0,reqdCol);
-//      tempS.showCurve(0,reqdCol);
-//    }
+      tempS.copyCurve(this, i, i+curvSize-1);
+      //       tempS.copyCurve(this,startX,startX+curvSize-1);
+      //       tempS.copyCurve(this,0,curvSize-1);
+      //      float a = Q.distancesCurve(tempS);
+      //      float a = Q.anglesCurve(tempS);
+      //      float a = Q.momentsCurve(tempS);
+      //      tempS.registerToCurve(Q,a);
+      Boolean bDraw = tempS.isSameCurve(Q);   
+//      if (bDraw && (lastCurveThreshold > -1 && lastCurveThreshold < tempS.isNotInThreshold))
+      if(bDraw)
+      {
+        tempS.showCurve(0, reqdCol); 
+//        if (!switchGraphMode)
+//        {
+//          i = i+curvSize-1;
+//          bDraw = false;
+//        }
+      }     
+      lastCurveThreshold =tempS.isNotInThreshold;    
+//      println(tempS.isNotInThreshold);
+      //      tempS.showCurve(0,reqdCol);
+    }
   }
-  
+
   Boolean isSameCurve(BSpline Q)
   {
     Boolean result = true;
     float a = Q.distancesCurve(this);
-    int isNotInThreshold = 0;
+    //    float a = Q.anglesCurve(this);
+    //    float a = Q.momentsCurve(this);
+    this.isNotInThreshold = 0;
     pt2 A=centerVCurve(); 
     pt2 B=Q.centerVCurve(); 
+    pt2 P1C = P2(A.x + 10, A.y);
     ArrayList<pt2> temp = new ArrayList<pt2>();
+//    ArrayList<pt2> tempNormalCurve = new ArrayList<pt2>();
+    vec2 refNormal = Q.normalVCurve();
     for (int i=0; i<curve.size (); i++)
     {
-      temp.add(P2(curve.get(i).x, curve.get(i).y).add(V2(A, B)));//.rotate(a, B));
-//      temp.add(P2(curve.get(i).x, curve.get(i).y));
+      if (!registrationOff)
+      {
+        temp.add(P2(curve.get(i).x, curve.get(i).y).add(V2(A, B)).rotate(a, B));
+      }
+      else
+      {
+        temp.add(P2(curve.get(i).x, curve.get(i).y));
+      }
+      if(switchGraphMode)
+      {
+//        tempNormalCurve.add(P2(temp.get(i),));
+      }
     }
-    for(int i = 1; i < Q.curve.size()-2;i++)
+    for (int i = 1; i < Q.curve.size ()-2; i++)
     {
-      pt2 P1 =P2(Q.curve.get(i-1));
-      pt2 P2 =P2(Q.curve.get(i));
-      pt2 P3 =P2(Q.curve.get(i+1));
-      vec2 V = V2(P2, P1);
-      vec2 W = V2(P3,P2);
-      
-      pt2 P11 =P2(temp.get(i-1));
-      pt2 P21 =P2(temp.get(i));
-      pt2 P31 =P2(temp.get(i+1));
-      vec2 V1 = V2(P21, P11);
-      vec2 W1 = V2(P31, P21);
-      float a1 = positive(angle(W,V));
-      float a2 = positive(angle(W1,V1));
-      println(a1-a2);
-      if(a1-a2 > 0.05 && a1-a2 <-0.05)
-//      if(a1!=a2)
-      {
-        isNotInThreshold++;
-      }  
-      println(isNotInThreshold);
-      if(isNotInThreshold > 10)
-      {
-        result = false;
-        break;
-      }    
+//      if (!switchGraphMode)
+//      {
+        pt2 P1 =P2(Q.curve.get(i-1));
+        pt2 P2 =P2(Q.curve.get(i));
+        pt2 P3 =P2(Q.curve.get(i+1));
+        vec2 V = U(P2, P1);
+        vec2 W = U(P3, P2);
+
+        pt2 P11 =P2(temp.get(i-1));
+        pt2 P21 =P2(temp.get(i));
+        pt2 P31 =P2(temp.get(i+1));
+        vec2 V1 = U(P21, P11);
+        vec2 W1 = U(P31, P21);
+        float a1 = positive(angle(W, V));
+        float a2 = positive(angle(W1, V1));
+        float refA1 = positive(angle(V,refNormal));
+        float refA2 = positive(angle(V1,refNormal));
+        //      println(a1-a2);
+        if (((a1-a2) > 0.05) || ((a1-a2) <-0.05))
+          //      if(a1!=a2)
+        {
+          this.isNotInThreshold++;
+        }  
+        else  if (!switchGraphMode)
+        {
+          if (((refA1-refA2) > 0.05) || ((refA1-refA2) <-0.05))
+          {
+            this.isNotInThreshold++;
+          }
+        }
+        //      println(isNotInThreshold);
+        if (this.isNotInThreshold > errorCnt)
+        {
+          result = false;
+          break;
+        }
+//      } else
+//      {
+//        
+//      }
     }
     return result;
   }
-  
+
   void registerToCurve(BSpline Q, float a) {  // vertex registration
     pt2 A=centerVCurve(); 
     pt2 B=Q.centerVCurve(); 
@@ -641,13 +685,19 @@ class BSpline {
     curve.clear();
     for (int i=0; i<temp.size (); i++) curve.add(temp.get(i).rotate(aa, G));
   };
-  
+
   pt2 centerVCurve() {
     pt2 G=P2(); 
     for (int i=0; i<curve.size (); i++) G.add(curve.get(i).x, curve.get(i).y); 
     return S(1./curve.size (), G);
   }
   
+  vec2 normalVCurve() {
+    vec2 V= V2(0,0); 
+    for (int i=0; i<curve.size (); i++) V.add(curve.get(i).x, curve.get(i).y); 
+    return U(V.divideBy(1./curve.size ()));
+  }
+
   float distancesCurve(BSpline Q) {  // vertex registration
     pt2 A=centerVCurve(); 
     pt2 B=Q.centerVCurve();
@@ -657,7 +707,7 @@ class BSpline {
     for (int i=0; i<min (curve.size (), Q.curve.size()); i++) c+=dot(V2(A, curve.get(i)), V2(B, Q.curve.get(i)));
     return atan2(s, c);
   } 
-  
+
   float momentsCurve(BSpline Q) {  // minus sum of moments
     pt2 A=centerVCurve(); 
     pt2 B=Q.centerVCurve(); 
@@ -677,7 +727,7 @@ class BSpline {
     for (int i=0; i<min (curve.size (), Q.curve.size()); i++) a+=atan2(dot(V2(A, curve.get(i)), R2(V2(B, Q.curve.get(i)))), dot(V2(A, curve.get(i)), V2(B, Q.curve.get(i))));
     return a=a/curve.size ();
   } 
-  
+
   void copyCurve(BSpline Q, int start, int end)
   {
     curve.clear();
