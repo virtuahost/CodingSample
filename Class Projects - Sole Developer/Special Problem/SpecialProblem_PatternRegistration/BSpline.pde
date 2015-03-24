@@ -303,6 +303,15 @@ class BSpline {
       //      println(start);
       //      println(end);
       //      println("Finish");
+      if(start > end)
+      {
+        int temp = start;
+        start = end;
+        end = temp;
+        pt2 tempPt = P2(tempStart);
+        tempStart = P2(tempEnd);
+        tempEnd = P2(tempPt);      
+      }
       this.startX = start;
       this.endX = end;
       output.curve.add(tempStart);
