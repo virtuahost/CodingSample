@@ -638,14 +638,14 @@ class BSpline {
         float refA1 = positive(angle(V,refNormal));
         float refA2 = positive(angle(V1,refNormal));
         //      println(a1-a2);
-        if (((a1-a2) > 0.05) || ((a1-a2) <-0.05))
+        if (((a1-a2) > 0.1) || ((a1-a2) <-0.1))
           //      if(a1!=a2)
         {
           this.isNotInThreshold++;
         }  
         else  if (!switchGraphMode)
         {
-          if (((refA1-refA2) > 0.05) || ((refA1-refA2) <-0.05))
+          if (((refA1-refA2) > 0.1) || ((refA1-refA2) <-0.1))
           {
             this.isNotInThreshold++;
           }
