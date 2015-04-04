@@ -298,6 +298,7 @@ void clearAll()
   AS = new BSpline();
   cutEdgeEnd = P2();
   cutEdgeSt = P2();
+  register = false;
   lnCurv = 0;
 }
 
