@@ -23,7 +23,7 @@ int sel=-1;
 int face = -1;
 int lnCurv = 0;
 float f=0;
-Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false;
+Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false,drawDebug=false;
 pt2 edgeSt;
 pt2 cutEdgeSt;
 pt2 cutEdgeEnd;
@@ -179,7 +179,7 @@ void draw() {      // executed at each frame
     }
   }
   fill(black);
-  text("Use = and - to increase error tolerance. Error tolerance is clamped between 1 and 10.\n Current Error Count = " + errorCnt,1200,100);
+  text("Use = and - to change error tolerance. Error tolerance is clamped between 1 and 10.\n Current Error tolerance count = " + errorCnt,1200,100);
   noFill();
   //      break;  
   //    default:
@@ -283,6 +283,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
         PS.addPt(P2(88.0 + i*70, 283.0));    //16
         PS.addPt(P2(102.0 + i*70, 285.0));   //17
       }
+    }
+    if(key == 'd')
+    {
+      drawDebug = !drawDebug;
     }
   }
 }

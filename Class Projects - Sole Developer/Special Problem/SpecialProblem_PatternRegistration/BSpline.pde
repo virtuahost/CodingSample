@@ -5,12 +5,15 @@ class BSpline {
   ArrayList<Integer> cIndex;
   ArrayList<Float> radCPts, radFunction;
   ArrayList<pt2>[] Left, Right;
+//  ArrayList<pt2> arcLengthSample;
   Float rad = 5.0;
   boolean radMode = false; // to enable editing radius of control points
   int cType = 1;
   color curveClr = green;
   float circleRadius = 10;
   int isNotInThreshold = 0;
+//  float arcLengthSampleSize = 
+  float maxThresholdRad = 100;
 
   BSpline() { 
     cPts = new ArrayList<pt2>();
@@ -259,88 +262,6 @@ class BSpline {
     }
   }
 
-  BSpline generateCurvePiece(pt2 x, pt2 y)
-  {
-    BSpline output = new BSpline();
-    if (curve.size() > 1 ) {
-      pt2 tempStart = P2();
-      pt2 tempEnd = P2();
-      int start = -1;
-      int end = -1;
-      //      println("Begin");
-      for (int i=0; i<curve.size (); i++) {
-        if (i == 0)
-        {          
-          //          tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
-          tempStart = P2(curve.get(i));
-          start = i;
-          //          tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
-          tempEnd = P2(curve.get(i));
-          end = i;
-        } else
-        {
-          //          pt2 temp1 = projectionOnLine(x, curve.get(i), curve.get(i+1));
-          //          pt2 temp2 = projectionOnLine(y, curve.get(i), curve.get(i+1));
-          //          if (d(x, tempStart) > d(x,temp1))
-          if (d(x, tempStart) > d(x, curve.get(i)))
-          {         
-            //            println("Start: " + start + "val: " + d2(x, tempStart) + ", " +  d2(x,temp1));
-            //            tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
-            tempStart = P2(curve.get(i));
-            start = i;
-          }
-          //          if (d(y, tempEnd) > d(y,temp2))
-          if (d(y, tempEnd) > d(y, curve.get(i)))
-          {
-            //            println("End: " + end + "val: " + d2(y, tempEnd) + ", " +  d2(y,temp2));
-            //            tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
-            tempEnd = P2(curve.get(i));
-            end = i;
-          }
-        }
-      }
-      //      println(curve.size());
-      //      println(start);
-      //      println(end);
-      //      println("Finish");
-      if(start > end)
-      {
-        int temp = start;
-        start = end;
-        end = temp;
-        pt2 tempPt = P2(tempStart);
-        tempStart = P2(tempEnd);
-        tempEnd = P2(tempPt);      
-      }
-      this.startX = start;
-      this.endX = end;
-      output.curve.add(tempStart);
-      for (int i=start; i<=end; i++)
-      {
-        output.curve.add(P2(curve.get(i)));
-      }
-      output.curve.add(tempEnd);
-    }
-
-    return output;
-  }
-
-  int startX = -1;
-  int endX = -1;
-  void showCurveDebug(int curveType, color reqdClr, int start, int end) {
-    if (curve.size() > 1 ) {
-
-      fill(reqdClr);
-      pen(reqdClr, 1);
-      for (int i=start; i<end; i++) {
-        //curve.get(i).show(3);
-        edge(curve.get(i), curve.get(i+1));
-      }
-      //curve.get(curve.size() - 1).show(3);
-      noFill();
-    }
-  }
-
   void showCurve(int curveType, color reqdClr) {
     if (curve.size() > 1 ) {
 
@@ -576,22 +497,10 @@ class BSpline {
     for (int i=0; i<curve.size ()-curvSize; i++) {
       BSpline tempS = new BSpline();
       tempS.copyCurve(this, i, i+curvSize-1);
-      //       tempS.copyCurve(this,startX,startX+curvSize-1);
-      //       tempS.copyCurve(this,0,curvSize-1);
-      //      float a = Q.distancesCurve(tempS);
-      //      float a = Q.anglesCurve(tempS);
-      //      float a = Q.momentsCurve(tempS);
-      //      tempS.registerToCurve(Q,a);
-      Boolean bDraw = tempS.isSameCurve(Q);   
-//      if (bDraw && (lastCurveThreshold > -1 && lastCurveThreshold < tempS.isNotInThreshold))
+      Boolean bDraw = tempS.isSameCurve(Q); 
       if(bDraw)
       {
         tempS.showCurve(0, reqdCol); 
-//        if (!switchGraphMode)
-//        {
-//          i = i+curvSize-1;
-//          bDraw = false;
-//        }
       }     
       lastCurveThreshold =tempS.isNotInThreshold;    
 //      println(tempS.isNotInThreshold);
@@ -599,76 +508,85 @@ class BSpline {
     }
   }
 
+  ArrayList<Float> getLeastSquareTransform(BSpline P, BSpline Q,boolean fixedScale)
+  {
+    pt2 C = P2(0,0);
+    pt2 A=P.centerVCurve(); 
+    pt2 B=Q.centerVCurve();
+    ArrayList<Float> outputVal = new ArrayList<Float>();
+    float cs = 0;
+    float ss = 0;
+    float ll = 0;
+    float rr = 0;
+    for(int i = 0; i<P.curve.size (); i++)
+    {
+      float newPX = P.curve.get(i).x - A.x;
+      float newQX = Q.curve.get(i).x - B.x;
+      float newPY = P.curve.get(i).y - A.y;
+      float newQY = Q.curve.get(i).y - B.y;
+      cs += newPX*newQX + newPY*newQY;
+      ss += -newPX*newQY + newPY*newQX;
+      ll += d2(P.curve.get(i),C);
+      rr += d2(Q.curve.get(i),C);
+    }
+    float scaleVal = 0;
+    float cosVal = 0;
+    float sinVal = 0;
+    float tranValX = 0;
+    float tranValY = 0;
+    if(ll!= 0)
+    {
+      scaleVal = (fixedScale?1:sqrt(rr/ll));
+      cosVal = cs/sqrt(cs*cs+ss*ss);
+      sinVal = ss/sqrt(cs*cs+ss*ss);
+      tranValX = B.x - scaleVal*(cosVal*A.x-sinVal*A.y);
+      tranValY = B.y - scaleVal*(cosVal*A.y+sinVal*A.x);
+    }
+    outputVal.add(scaleVal);
+    outputVal.add(cosVal);
+    outputVal.add(sinVal);
+    outputVal.add(tranValX);
+    outputVal.add(tranValY);
+    return outputVal;
+  }
+
+  pt2 applyTransform(pt2 P, ArrayList<Float> transf)
+  {
+    float x = 0;
+    float y = 0;
+    float cs = transf.get(1);
+    float ss = transf.get(2);
+    x = transf.get(3) + transf.get(0)*(cs*P.x-ss*P.y);
+    y = transf.get(4) + transf.get(0)*(cs*P.y+ss*P.x);
+    return P2(x,y);
+  }
+
   Boolean isSameCurve(BSpline Q)
   {
     Boolean result = true;
-    float a = Q.distancesCurve(this);
-    //    float a = Q.anglesCurve(this);
-    //    float a = Q.momentsCurve(this);
-    this.isNotInThreshold = 0;
-    pt2 A=centerVCurve(); 
-    pt2 B=Q.centerVCurve(); 
-    pt2 P1C = P2(A.x + 10, A.y);
     ArrayList<pt2> temp = new ArrayList<pt2>();
-//    ArrayList<pt2> tempNormalCurve = new ArrayList<pt2>();
-    vec2 refNormal = Q.normalVCurve();
+    ArrayList<Float> transf = getLeastSquareTransform(this,Q,true);
     for (int i=0; i<curve.size (); i++)
     {
-      if (!registrationOff)
-      {
-        temp.add(P2(curve.get(i).x, curve.get(i).y).add(V2(A, B)).rotate(a, B));
+      //Least Square Implementation
+      temp.add(applyTransform(curve.get(i),transf));
+    }
+    if(drawDebug)
+    {
+      fill(black);
+      pen(black, 1);
+      for (int i=0; i<temp.size()-1; i++) {
+        edge(temp.get(i), temp.get(i+1));
       }
-      else
-      {
-        temp.add(P2(curve.get(i).x, curve.get(i).y));
-      }
-      if(switchGraphMode)
-      {
-//        tempNormalCurve.add(P2(temp.get(i),));
-      }
+      noFill();
     }
     for (int i = 1; i < Q.curve.size ()-2; i++)
     {
-//      if (!switchGraphMode)
-//      {
-        pt2 P1 =P2(Q.curve.get(i-1));
-        pt2 P2 =P2(Q.curve.get(i));
-        pt2 P3 =P2(Q.curve.get(i+1));
-        vec2 V = U(P2, P1);
-        vec2 W = U(P3, P2);
-
-        pt2 P11 =P2(temp.get(i-1));
-        pt2 P21 =P2(temp.get(i));
-        pt2 P31 =P2(temp.get(i+1));
-        vec2 V1 = U(P21, P11);
-        vec2 W1 = U(P31, P21);
-        float a1 = positive(angle(W, V));
-        float a2 = positive(angle(W1, V1));
-        float refA1 = positive(angle(V,refNormal));
-        float refA2 = positive(angle(V1,refNormal));
-        //      println(a1-a2);
-        if (((a1-a2) > 0.1) || ((a1-a2) <-0.1))
-          //      if(a1!=a2)
-        {
-          this.isNotInThreshold++;
-        }  
-        else  if (!switchGraphMode)
-        {
-          if (((refA1-refA2) > 0.1) || ((refA1-refA2) <-0.1))
-          {
-            this.isNotInThreshold++;
-          }
-        }
-        //      println(isNotInThreshold);
-        if (this.isNotInThreshold > errorCnt)
-        {
-          result = false;
-          break;
-        }
-//      } else
-//      {
-//        
-//      }
+      if(d2(Q.curve.get(i),temp.get(i)) > maxThresholdRad)
+      {
+        if(this.isNotInThreshold > errorCnt) {result = false;break;}
+        this.isNotInThreshold++;
+      }
     }
     return result;
   }
@@ -745,33 +663,92 @@ class BSpline {
       curve.add(P2(Q.curve.get(i)));
     }
   }
-
-  //Genom code based on point signature
-  //Create circle/sphere around the control point. Let the control circle intersect the created curve. 
-  //The intersected curve C will define a plane based on tangent and normal of the curve. 
-  //Use weighted average to find center. 
-  //Create a projection of the curve at the control point along the normal to the intersected curve.
-  //Create signal profile based on distance of   
-  ArrayList<Signature> arrptSignature = new ArrayList<Signature>();
-  void createGenom()
+  
+//  void createArcLengthSample()
+//  { 
+//    for (int i=0; i<curve.size (); i++)
+//    {
+//      
+//    }
+//    arcLengthSample
+//  }
+  
+  BSpline generateCurvePiece(pt2 x, pt2 y)
   {
-    for (int i=0; i<cPts.size (); i++)
-    {
-      ArrayList<pt2> intersectCurve = new ArrayList<pt2>();
-      pt2 rp = P2(cPts.get(i).x, cPts.get(i).y);
-      for (int j=0; j<curve.size () - 1; j++) {
-        if (d2(rp, curve.get(j))<=circleRadius)
+    BSpline output = new BSpline();
+    if (curve.size() > 1 ) {
+      pt2 tempStart = P2();
+      pt2 tempEnd = P2();
+      int start = -1;
+      int end = -1;
+      //      println("Begin");
+      for (int i=0; i<curve.size (); i++) {
+        if (i == 0)
+        {          
+          //          tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
+          tempStart = P2(curve.get(i));
+          start = i;
+          //          tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
+          tempEnd = P2(curve.get(i));
+          end = i;
+        } else
         {
-          vec2 curTVec;
-          vec2 curNorm;
-          intersectCurve.add(P2(curve.get(j).x, curve.get(j).y));
-          //Find unit tangent at each point
-          curTVec = U(V2(curve.get(j), curve.get(j+1)));
-
-          //Find unit normal
-          curNorm = U(R2(curTVec));
+          if (d(x, tempStart) > d(x, curve.get(i)))
+          {         
+            //            println("Start: " + start + "val: " + d2(x, tempStart) + ", " +  d2(x,temp1));
+            //            tempStart = projectionOnLine(x, curve.get(i), curve.get(i+1));
+            tempStart = P2(curve.get(i));
+            start = i;
+          }
+          //          if (d(y, tempEnd) > d(y,temp2))
+          if (d(y, tempEnd) > d(y, curve.get(i)))
+          {
+            //            println("End: " + end + "val: " + d2(y, tempEnd) + ", " +  d2(y,temp2));
+            //            tempEnd = projectionOnLine(y, curve.get(i), curve.get(i+1));
+            tempEnd = P2(curve.get(i));
+            end = i;
+          }
         }
       }
+      //      println(curve.size());
+      //      println(start);
+      //      println(end);
+      //      println("Finish");
+      if(start > end)
+      {
+        int temp = start;
+        start = end;
+        end = temp;
+        pt2 tempPt = P2(tempStart);
+        tempStart = P2(tempEnd);
+        tempEnd = P2(tempPt);      
+      }
+      this.startX = start;
+      this.endX = end;
+      output.curve.add(tempStart);
+      for (int i=start; i<=end; i++)
+      {
+        output.curve.add(P2(curve.get(i)));
+      }
+      output.curve.add(tempEnd);
+    }
+
+    return output;
+  }
+
+  int startX = -1;
+  int endX = -1;
+  void showCurveDebug(int curveType, color reqdClr, int start, int end) {
+    if (curve.size() > 1 ) {
+
+      fill(reqdClr);
+      pen(reqdClr, 1);
+      for (int i=start; i<end; i++) {
+        //curve.get(i).show(3);
+        edge(curve.get(i), curve.get(i+1));
+      }
+      //curve.get(curve.size() - 1).show(3);
+      noFill();
     }
   }
 }
