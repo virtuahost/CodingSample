@@ -723,64 +723,31 @@ class BSpline {
   void createArcLengthSample()
   {  
     arcLengthSample.clear();
-//    arcLengthSampleDraw.clear();   
     boolean keepCalc = false;
     float tempLen = 0;
     pt2 strtPC = curve.get(0);
     pt2 endPC = curve.get(1);
     arcLengthSample.add(strtPC);
-    arcLengthSampleDraw.add(strtPC);
+//    arcLengthSampleDraw.add(strtPC);
     for (int i=1; i<curve.size (); i++)
     {
       endPC = curve.get(i);
-      if(keepCalc)
+      if(d(strtPC,endPC) > (arcLengthSampleSize - tempLen))
       {
-        if (d2(strtPC, endPC) > arcLengthSampleSize)
+        float remLen = d(strtPC,endPC);
+        while(remLen > arcLengthSampleSize)
         {
-          pt2 newE = MoveByDistanceTowards(strtPC,arcLengthSampleSize,endPC);
-          arcLengthSample.add(newE);
-//          arcLengthSampleDraw.add(newE);
-//          if(arcLengthSampleSize/d2(strtPC, endPC) < 0.5)
-//          {
-//            i--;
-//          }
-          strtPC = P2(newE.x+0.01,newE.y+0.01);  
-          keepCalc = false;
-          tempLen = 0;        
-        } else if (d2(strtPC, endPC) == arcLengthSampleSize)
-        {        
-          arcLengthSample.add(endPC);
-//          arcLengthSampleDraw.add(endPC);
-          keepCalc = false;
-          tempLen = 0;
-          strtPC = P2(endPC.x+0.01,endPC.y+0.01);
-        } else if (d2(strtPC, endPC) < arcLengthSampleSize)
-        {
-          keepCalc = true;
-          tempLen = tempLen + d2(strtPC, endPC);
-//          arcLengthSampleDraw.add(endPC);
-        }
+          pt2 newPt = MoveByDistanceTowards(strtPC,arcLengthSampleSize - tempLen,endPC);
+          arcLengthSample.add(newPt);
+          remLen= remLen - d(strtPC,newPt);
+          tempLen = (remLen < arcLengthSampleSize?tempLen+remLen:0);          
+          strtPC = P2(newPt);
+        }      
       }
-      else if (d2(strtPC, endPC) > arcLengthSampleSize)
+      else
       {
-        pt2 newE = MoveByDistanceTowards(strtPC,arcLengthSampleSize,endPC);
-        arcLengthSample.add(newE);
-//        arcLengthSampleDraw.add(newE);
-//        if(arcLengthSampleSize/d2(strtPC, endPC) < 0.5)
-//        {
-//          i--;
-//        }
-        strtPC = P2(newE.x+0.01,newE.y+0.01);
-      } else if (d2(strtPC, endPC) == arcLengthSampleSize)
-      {        
-        arcLengthSample.add(endPC);
-//        arcLengthSampleDraw.add(endPC);
-        strtPC = P2(endPC.x+0.01,endPC.y+0.01);
-      } else if (d2(strtPC, endPC) < arcLengthSampleSize)
-      {
-        keepCalc = true;
-        tempLen = d2(strtPC, endPC);
-//        arcLengthSampleDraw.add(endPC);
+        tempLen = (tempLen+d(strtPC,endPC)==arcLengthSampleSize?0:tempLen+d(strtPC,endPC));
+        if(tempLen == 0)arcLengthSample.add(endPC);
       }
     }
   }
