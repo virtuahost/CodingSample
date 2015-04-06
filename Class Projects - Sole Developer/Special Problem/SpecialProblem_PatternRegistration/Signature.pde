@@ -5,7 +5,12 @@ class Signature{
   public vec2 tangent;
 }
 class Genom {
-  public float distance = 0.0f;
-  public float angle = 0f;
+  public int cntVal = 0;
+  public int firstIndex = -1;
+  public Genom(){}
+  public Genom(int c, int i)
+  {
+    cntVal = c;
+    firstIndex = i;
+  }
 }
-

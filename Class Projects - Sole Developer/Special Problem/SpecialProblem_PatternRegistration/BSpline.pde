@@ -7,6 +7,8 @@ class BSpline {
   ArrayList<pt2>[] Left, Right;
   ArrayList<pt2> arcLengthSample;
   ArrayList<pt2> arcLengthSampleDraw;
+  ArrayList<Float> arcSampleCurvChange;
+  LinkedHashMap<Float, Genom> dicOmegaSet;
   Float rad = 5.0;
   boolean radMode = false; // to enable editing radius of control points
   int cType = 1;
@@ -15,6 +17,7 @@ class BSpline {
   int isNotInThreshold = 0;
   float arcLengthSampleSize = 1;
   float maxThresholdRad = 100;
+  float errVal = 0.005;
 
   BSpline() { 
     cPts = new ArrayList<pt2>();
@@ -29,6 +32,8 @@ class BSpline {
     Right = new ArrayList [3];
     topCap = new ArrayList<pt2>();
     botCap = new ArrayList<pt2>();
+    arcSampleCurvChange = new ArrayList<Float>();
+    dicOmegaSet = new LinkedHashMap<Float, Genom>();
     //Changes for 3D manipulation Start
     //Changes for 3D manipulation End
   } 
@@ -501,51 +506,41 @@ class BSpline {
     int lastCurveThreshold = -1;
     for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
     {
-//      if(isSame(arcLengthSample.get(i),Q.arcLengthSample.get(0)))
-//      {
-        BSpline tempS = new BSpline();
-        tempS.copySampleCurve(this, i, i+curvSize-1);
-        Boolean bDraw = tempS.isSameCurve(Q); 
-        if (bDraw)
-        {
-          tempS.showSampleCurve(reqdCol);
-        }  
-//      }        
+      BSpline tempS = new BSpline();
+      tempS.copySampleCurve(this, i, i+curvSize-1);
+      Boolean bDraw = tempS.isSameCurve(Q); 
+      if (bDraw)
+      {
+        tempS.showSampleCurve(reqdCol);
+        i = i+curvSize-1;
+      }
     }
-//    for (int i=0; i<curve.size ()-curvSize; i++) {
-//      BSpline tempS = new BSpline();
-//      tempS.copyCurve(this, i, i+curvSize-1);
-//      Boolean bDraw = tempS.isSameCurve(Q); 
-//      if (bDraw)
-//      {
-//        tempS.showCurve(0, reqdCol);
-//      }     
-//      lastCurveThreshold =tempS.isNotInThreshold;    
-//      //      println(tempS.isNotInThreshold);
-//      //      tempS.showCurve(0,reqdCol);
-//    }
   }
 
-  ArrayList<Float> getLeastSquareTransform(BSpline P, BSpline Q, boolean fixedScale)
+  lstSqrTransf getLeastSquareTransform(BSpline P, BSpline Q, boolean fixedScale)
+  {
+    return getLeastSquareTransform(P.arcLengthSample, Q.arcLengthSample, fixedScale);
+  }
+
+  lstSqrTransf getLeastSquareTransform(ArrayList<pt2> P, ArrayList<pt2> Q, boolean fixedScale)
   {
     pt2 C = P2(0, 0);
-    pt2 A=P.centerSampleCurve(); 
-    pt2 B=Q.centerSampleCurve();
-    ArrayList<Float> outputVal = new ArrayList<Float>();
+    pt2 A=this.centerSampleCurve(P); 
+    pt2 B=this.centerSampleCurve(Q);
     float cs = 0;
     float ss = 0;
     float ll = 0;
     float rr = 0;
-    for (int i = 0; i<P.arcLengthSample.size (); i++)
+    for (int i = 0; i<P.size (); i++)
     {
-      float newPX = P.arcLengthSample.get(i).x - A.x;
-      float newQX = Q.arcLengthSample.get(i).x - B.x;
-      float newPY = P.arcLengthSample.get(i).y - A.y;
-      float newQY = Q.arcLengthSample.get(i).y - B.y;
+      float newPX = P.get(i).x - A.x;
+      float newQX = Q.get(i).x - B.x;
+      float newPY = P.get(i).y - A.y;
+      float newQY = Q.get(i).y - B.y;
       cs += newPX*newQX + newPY*newQY;
       ss += -newPX*newQY + newPY*newQX;
-      ll += d2(P.arcLengthSample.get(i), C);
-      rr += d2(Q.arcLengthSample.get(i), C);
+      ll += d2(P.get(i), C);
+      rr += d2(Q.get(i), C);
     }
     float scaleVal = 0;
     float cosVal = 0;
@@ -560,34 +555,35 @@ class BSpline {
       tranValX = B.x - scaleVal*(cosVal*A.x-sinVal*A.y);
       tranValY = B.y - scaleVal*(cosVal*A.y+sinVal*A.x);
     }
-    outputVal.add(scaleVal);
-    outputVal.add(cosVal);
-    outputVal.add(sinVal);
-    outputVal.add(tranValX);
-    outputVal.add(tranValY);
+    lstSqrTransf outputVal = new lstSqrTransf(scaleVal, cosVal, sinVal, tranValX, tranValY);
     return outputVal;
   }
 
-  pt2 applyTransform(pt2 P, ArrayList<Float> transf)
+  pt2 applyTransform(pt2 P, lstSqrTransf transf)
   {
     float x = 0;
     float y = 0;
-    float cs = transf.get(1);
-    float ss = transf.get(2);
-    x = transf.get(3) + transf.get(0)*(cs*P.x-ss*P.y);
-    y = transf.get(4) + transf.get(0)*(cs*P.y+ss*P.x);
+    float cs = transf.cosVal;
+    float ss = transf.sinVal;
+    x = transf.tranValX + transf.scaleVal*(cs*P.x-ss*P.y);
+    y = transf.tranValY + transf.scaleVal*(cs*P.y+ss*P.x);
     return P2(x, y);
   }
 
   Boolean isSameCurve(BSpline Q)
   {
+    return isSameCurve(this.arcLengthSample, Q.arcLengthSample);
+  }
+
+  Boolean isSameCurve(ArrayList<pt2> P, ArrayList<pt2> Q)
+  {
     Boolean result = true;
     ArrayList<pt2> temp = new ArrayList<pt2>();
-    ArrayList<Float> transf = getLeastSquareTransform(this, Q, true);
-    for (int i=0; i<arcLengthSample.size (); i++)
+    lstSqrTransf transf = getLeastSquareTransform(P, Q, true);
+    for (int i=0; i<P.size (); i++)
     {
       //Least Square Implementation
-      temp.add(applyTransform(arcLengthSample.get(i), transf));
+      temp.add(applyTransform(P.get(i), transf));
     }
     if (drawDebug)
     {
@@ -598,9 +594,9 @@ class BSpline {
       }
       noFill();
     }
-    for (int i = 1; i < Q.arcLengthSample.size ()-2; i++)
+    for (int i = 1; i < Q.size ()-2; i++)
     {
-      if (d2(Q.arcLengthSample.get(i), temp.get(i)) > maxThresholdRad)
+      if (d2(Q.get(i), temp.get(i)) > maxThresholdRad)
       {
         if (this.isNotInThreshold > errorCnt) {
           result = false;
@@ -639,11 +635,17 @@ class BSpline {
     for (int i=0; i<curve.size (); i++) G.add(curve.get(i).x, curve.get(i).y); 
     return S(1./curve.size (), G);
   }
-  
+
   pt2 centerSampleCurve() {
     pt2 G=P2(); 
     for (int i=0; i<arcLengthSample.size (); i++) G.add(arcLengthSample.get(i).x, arcLengthSample.get(i).y); 
     return S(1./arcLengthSample.size (), G);
+  }
+
+  pt2 centerSampleCurve(ArrayList<pt2> lstSample) {
+    pt2 G=P2(); 
+    for (int i=0; i<lstSample.size (); i++) G.add(lstSample.get(i).x, lstSample.get(i).y); 
+    return S(1./lstSample.size (), G);
   }
 
   vec2 normalVCurve() {
@@ -690,23 +692,17 @@ class BSpline {
       curve.add(P2(Q.curve.get(i)));
     }
   }
-  
+
   void copySampleCurve(BSpline Q, int start, int end)
   {
     arcLengthSample.clear();
-//    arcLengthSampleDraw.clear();
     pt2 endPC = P2(Q.arcLengthSample.get(end));
     for (int i=start; i<=end; i++)
     {
       arcLengthSample.add(P2(Q.arcLengthSample.get(i)));
     }
-//    for (int i=start; i<=Q.arcLengthSampleDraw.size()-1; i++)
-//    {
-//      arcLengthSampleDraw.add(P2(Q.arcLengthSampleDraw.get(i)));
-//      if(isSame(Q.arcLengthSampleDraw.get(i),endPC))break;
-//    }
   }
-  
+
   void showSampleCurve(color reqdClr)
   {
     if (arcLengthSample.size() > 1 ) {
@@ -728,26 +724,24 @@ class BSpline {
     pt2 strtPC = curve.get(0);
     pt2 endPC = curve.get(1);
     arcLengthSample.add(strtPC);
-//    arcLengthSampleDraw.add(strtPC);
     for (int i=1; i<curve.size (); i++)
     {
       endPC = curve.get(i);
-      if(d(strtPC,endPC) > (arcLengthSampleSize - tempLen))
+      if (d(strtPC, endPC) > (arcLengthSampleSize - tempLen))
       {
-        float remLen = d(strtPC,endPC);
-        while(remLen > arcLengthSampleSize)
+        float remLen = d(strtPC, endPC);
+        while (remLen > arcLengthSampleSize)
         {
-          pt2 newPt = MoveByDistanceTowards(strtPC,arcLengthSampleSize - tempLen,endPC);
+          pt2 newPt = MoveByDistanceTowards(strtPC, arcLengthSampleSize - tempLen, endPC);
           arcLengthSample.add(newPt);
-          remLen= remLen - d(strtPC,newPt);
+          remLen= remLen - d(strtPC, newPt);
           tempLen = (remLen < arcLengthSampleSize?tempLen+remLen:0);          
           strtPC = P2(newPt);
-        }      
-      }
-      else
+        }
+      } else
       {
-        tempLen = (tempLen+d(strtPC,endPC)==arcLengthSampleSize?0:tempLen+d(strtPC,endPC));
-        if(tempLen == 0)arcLengthSample.add(endPC);
+        tempLen = (tempLen+d(strtPC, endPC)==arcLengthSampleSize?0:tempLen+d(strtPC, endPC));
+        if (tempLen == 0)arcLengthSample.add(endPC);
       }
     }
   }
@@ -829,6 +823,154 @@ class BSpline {
       //curve.get(curve.size() - 1).show(3);
       noFill();
     }
+  }
+  String findAllAndDraw(color reqdClr)
+  {
+    int found = 0;
+    this.createArcLengthSample();
+    this.createSampleSimilaritySet();
+    found = startSearch(reqdClr);
+    return String.valueOf(found);
+  }
+
+  int startSearch(color reqdClr)
+  {
+    int i = 0;
+    int start = -1;
+    int end = -1;
+    int finalVal = 0;
+    int newVal = 0;    
+    float remIndex = -1;
+    do
+    {
+      finalVal = newVal;
+      if(remIndex>-1)dicOmegaSet.remove(dicOmegaSet);
+      for (float keyVal : dicOmegaSet.keySet ())
+      {
+        if (i==0) {
+          start = dicOmegaSet.get(keyVal).firstIndex;
+          i++;
+          continue;
+        }
+        if (i==1) {
+          if(start > dicOmegaSet.get(keyVal).firstIndex && dicOmegaSet.get(keyVal).cntVal > 10){start = dicOmegaSet.get(keyVal).firstIndex;}
+          if(end < dicOmegaSet.get(keyVal).firstIndex && (start < end||end == -1)&& dicOmegaSet.get(keyVal).cntVal > 50){end = dicOmegaSet.get(keyVal).firstIndex;remIndex=keyVal;}
+        }
+      }
+      newVal = registerAndDraw(start,end,reqdClr);
+    }while(finalVal < newVal && finalVal != 0);
+    return newVal;
+  }
+
+  void createSampleSimilaritySet()
+  {
+    dicOmegaSet.clear();
+    for (int i=1; i<arcLengthSample.size () - 1; i++) {
+      //Calc curvature value of triangle through the 3 points. Formula 4*area of Triangle/product of 3 sides
+      pt2 A = arcLengthSample.get(i-1);
+      pt2 B = arcLengthSample.get(i);
+      pt2 C = arcLengthSample.get(i+1);
+      float AB = d(A, B);
+      float BC = d(B, C);
+      float CA = d(C, A);
+      float P = (AB+BC+CA)/2;
+      float areaABC = sqrt(P*(P-AB)*(P-BC)*(P-CA));
+      float curvVal = 4*areaABC/(AB*BC*CA);
+      if ((AB*BC*CA) == 0)curvVal = 1;
+      arcSampleCurvChange.add(curvVal);
+      float tempVal = findKeyVal(curvVal);
+      if (tempVal == -1)
+      {
+        Genom keyVal = new Genom(1, i);
+        dicOmegaSet.put(curvVal, keyVal);
+      } else
+      {
+        Genom keyVal = new Genom(dicOmegaSet.get(tempVal).cntVal + 1, dicOmegaSet.get(tempVal).firstIndex);
+        dicOmegaSet.put(tempVal, keyVal);
+      }
+    }
+    this.sortHashMapByValues();
+  }
+
+  float findKeyVal(float curvVal)
+  {
+    if (dicOmegaSet.size() > 0)
+    {
+      for (Float keyVal : dicOmegaSet.keySet ())
+      {
+        if (curvVal-errVal <= keyVal && keyVal <= curvVal+errVal)
+        {
+          return keyVal;
+        }
+      }
+    }
+    return -1;
+  }
+
+  void sortHashMapByValues() {
+    LinkedHashMap<Float, Genom> sortedMap = new LinkedHashMap<Float, Genom>();
+    LinkedHashMap<Float, Genom> ignoreKeys = new LinkedHashMap<Float, Genom>();
+    for (float keyVal : dicOmegaSet.keySet ())
+    {
+      Genom tempVal = new Genom();
+      float updKey = -1;
+      boolean setData = true;
+      for (float keyAct : dicOmegaSet.keySet ())
+      {
+        if (ignoreKeys.containsKey(keyAct))continue;
+        if (setData)  
+        {      
+          tempVal = dicOmegaSet.get(keyAct);
+          updKey = keyAct;
+          setData = false;
+        }
+        Genom compVal = dicOmegaSet.get(keyAct);
+        if (compVal.cntVal > tempVal.cntVal)
+        {
+          updKey = keyAct;
+          tempVal = new Genom(compVal.cntVal, compVal.firstIndex);
+        }
+      }
+      if (tempVal.cntVal > -1)
+      {
+        sortedMap.put(updKey, tempVal);
+        ignoreKeys.put(updKey, tempVal);
+      }
+    }        
+    if (drawDebug)
+    {
+      println("Start: " + dicOmegaSet.size());
+      for (Genom keyVal : sortedMap.values ())
+      {
+        println("Val: " + keyVal.cntVal);
+      }
+      println("Size: " + sortedMap.size());
+    }
+    dicOmegaSet = sortedMap;
+  } 
+
+  int registerAndDraw(int start, int end, color reqdCol)
+  {
+    int k = 0;
+    int curvSize = end - start+1;
+    ArrayList<pt2> Q = new ArrayList<pt2>();
+    for(int i = start; i <= end; i++)
+    {
+      Q.add(P2(arcLengthSample.get(i)));
+    }
+    for (int i=end+1; i<arcLengthSample.size ()-curvSize; i++) 
+    {
+      BSpline tempS = new BSpline();
+      tempS.copySampleCurve(this, i, i+curvSize-1);
+      Boolean bDraw = tempS.isSameCurve(tempS.arcLengthSample, Q); 
+      if (bDraw)
+      {
+        k++;
+        tempS.showSampleCurve(reqdCol);
+        i = i+curvSize-1;
+      }
+    }
+    return k;
   }
 }
 

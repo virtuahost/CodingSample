@@ -23,7 +23,7 @@ int sel=-1;
 int face = -1;
 int lnCurv = 0;
 float f=0;
-Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false,drawDebug=false;
+Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false,drawDebug=false,findAll=false;
 pt2 edgeSt;
 pt2 cutEdgeSt;
 pt2 cutEdgeEnd;
@@ -178,6 +178,11 @@ void draw() {      // executed at each frame
       PS.registerAndDraw(AS,magenta);
     }
   }
+  if(findAll)
+  {
+    String tempTxt = PS.findAllAndDraw(magenta);
+    text("Elements found = " + tempTxt,1200,600);
+  }
   fill(black);
   text("Use = and - to change error tolerance. Error tolerance is clamped between 1 and 10.\n Current Error tolerance count = " + errorCnt,1200,100);
   noFill();
@@ -239,13 +244,19 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     if (key=='r')
     {
       register = !register;
+      findAll = false;
       //      selCurve = 3;
     }
     if (key=='f')
     {
       //      selCurve = 4;
       switchGraphMode = !switchGraphMode;
-      registrationOff = true;
+      registrationOff = false;
+    }
+    if(key=='m')
+    {
+      findAll = !findAll;
+      register = false;
     }
     if (key == 'p')
     {
@@ -299,6 +310,7 @@ void clearAll()
   cutEdgeEnd = P2();
   cutEdgeSt = P2();
   register = false;
+  findAll = false;
   lnCurv = 0;
 }
 
