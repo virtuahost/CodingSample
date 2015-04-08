@@ -1,0 +1,43 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/mark_done_menu_item"
+        android:icon="@drawable/ic_done_150"
+        android:title="@string/mark_done"/>
+    
+    <item
+        android:id="@+id/mark_not_done_menu_item"
+        android:icon="@drawable/ic_done_150"
+        android:title="@string/mark_not_done"/>
+
+    <item
+        android:id="@+id/details_menu_item"
+        android:icon="@drawable/list_bg"
+        android:title="@string/more_info_task"/>
+
+    <item
+        android:id="@+id/edit_task_menu_item"
+        android:icon="@drawable/ic_microphone_on_50"
+        android:title="@string/edit_task"/>
+
+    <item
+        android:id="@+id/rework_task_menu_item"
+        android:icon="@drawable/ic_microphone_on_50"
+        android:title="@string/rework_task"/>
+
+    <item
+        android:id="@+id/details_rework_menu_item"
+        android:icon="@drawable/list_bg"
+        android:title="@string/more_info_task"/>
+
+    <item
+        android:id="@+id/mark_rework_done_menu_item"
+        android:icon="@drawable/ic_done_150"
+        android:title="@string/mark_rework_done"/>
+
+    <item
+        android:id="@+id/delete_task_menu_item"
+        android:icon="@drawable/ic_no_50"
+        android:title="@string/delete_task"/>
+
+</menu><!-- From: file:/C:/virtua's_stuff/glassToDo/app/src/main/res/menu/single_task_menu.xml -->

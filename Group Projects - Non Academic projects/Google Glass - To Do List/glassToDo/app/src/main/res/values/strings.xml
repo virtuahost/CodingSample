@@ -1,0 +1,21 @@
+<resources>
+
+    <string name="app_name">Todo List</string>
+    <string name="new_task_voice_trigger">Add a task</string>
+    <string name="show_tasks_voice_trigger">Show the tasks</string>
+    <string name="save_task">Save</string>
+    <string name="cancel_save_task">Cancel</string>
+    <string name="record_task_again">Record again</string>
+    <string name="mark_done">Mark done</string>
+    <string name="mark_not_done">Mark not done</string>
+    <string name="edit_task">Record again</string>
+    <string name="delete_task">Delete</string>
+    <string name="quick_task">To Do Task</string>
+    <string name="rework_task">Rework</string>
+    <string name="mark_rework_done">Mark done</string>
+    <string name="to_do_service">To Do Quick View</string>
+    <string name="service_not_available">Location Service Not Available</string>
+    <string name="more_info_task">More Info</string>
+    <string name="status_icon">Status Icon</string>
+</resources>
+

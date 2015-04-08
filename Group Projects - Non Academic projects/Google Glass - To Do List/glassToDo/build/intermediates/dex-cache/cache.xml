@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\Deep\.gradle\caches\modules-2\files-2.1\com.firebase\firebase-client-android\2.2.1\4cc2dc4c178fe50d942264aff3749cad783c2e83\firebase-client-android-2.2.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4cc2dc4c178fe50d942264aff3749cad783c2e83">
+        <dex dex="C:\virtua&apos;s_stuff\glassToDo\app\build\intermediates\pre-dexed\debug\firebase-client-android-2.2.1-8f8f45498d641df2a2c7eb1cfe8213693ae39766.jar" />
+    </item>
+    <item
+        jar="C:\Users\Deep\.gradle\caches\modules-2\files-2.1\com.firebase\tubesock\0.0.11\d37cb67277928cf59344b4196af8d9cee1f1a27c\tubesock-0.0.11.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d37cb67277928cf59344b4196af8d9cee1f1a27c">
+        <dex dex="C:\virtua&apos;s_stuff\glassToDo\app\build\intermediates\pre-dexed\debug\tubesock-0.0.11-3cc71876c495f8d15422ea0434d1f95266fda01b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Deep\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-databind\2.2.2\3c8f6018eaa72d43b261181e801e6f8676c16ef6\jackson-databind-2.2.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="3c8f6018eaa72d43b261181e801e6f8676c16ef6">
+        <dex dex="C:\virtua&apos;s_stuff\glassToDo\app\build\intermediates\pre-dexed\debug\jackson-databind-2.2.2-b1b96c2bb6e8a26745fdd0351024d61f3b9bb056.jar" />
+    </item>
+    <item
+        jar="C:\Users\Deep\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-core\2.2.2\d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b\jackson-core-2.2.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b">
+        <dex dex="C:\virtua&apos;s_stuff\glassToDo\app\build\intermediates\pre-dexed\debug\jackson-core-2.2.2-487c80f62e2dc0e74a279d40aa1b5c611855955e.jar" />
+    </item>
+    <item
+        jar="C:\Users\Deep\.gradle\caches\modules-2\files-2.1\com.firebase\firebase-client-jvm\2.2.1\485b52379ebb3ca5d0e3bfbce2a16129e9a041de\firebase-client-jvm-2.2.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="485b52379ebb3ca5d0e3bfbce2a16129e9a041de">
+        <dex dex="C:\virtua&apos;s_stuff\glassToDo\app\build\intermediates\pre-dexed\debug\firebase-client-jvm-2.2.1-4eff6b01cd9d113070809ec0bf004488e1a477d8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Deep\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-annotations\2.2.2\285cb9c666f0f0f3dd8a1be04e1f457eb7b15113\jackson-annotations-2.2.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="285cb9c666f0f0f3dd8a1be04e1f457eb7b15113">
+        <dex dex="C:\virtua&apos;s_stuff\glassToDo\app\build\intermediates\pre-dexed\debug\jackson-annotations-2.2.2-2e53de2ee76c052af394bc1658872571f0cd5a15.jar" />
+    </item>
+
+</items>

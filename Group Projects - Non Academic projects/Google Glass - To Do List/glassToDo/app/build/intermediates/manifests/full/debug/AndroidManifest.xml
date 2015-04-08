@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="glassproject.ubicomp.com.todo"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="com.google.android.glass.permission.DEVELOPMENT" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/GlassTheme" >
+        <activity
+            android:name="glassproject.ubicomp.com.todo.activity.NewTaskActivity"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="com.google.android.glass.VoiceTrigger"
+                android:resource="@xml/new_task_voice_trigger" />
+        </activity>
+        <activity
+            android:name="glassproject.ubicomp.com.todo.activity.TaskListActivity"
+            android:enabled="true"
+            android:label="@string/show_tasks_voice_trigger" >
+            <intent-filter>
+                <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="com.google.android.glass.VoiceTrigger"
+                android:resource="@xml/show_tasks_voice_trigger" />
+        </activity>
+        <activity
+            android:name="glassproject.ubicomp.com.todo.activity.SingleTaskActivity"
+            android:enabled="true" >
+        </activity>
+        <activity
+            android:name="glassproject.ubicomp.com.todo.activity.MoreInfoActivity"
+            android:enabled="true" >
+        </activity>
+        <activity
+            android:name="glassproject.ubicomp.com.todo.activity.ToDoTaskListActivity"
+            android:enabled="true"
+            android:label="@string/quick_task" >
+            <intent-filter>
+                <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="com.google.android.glass.VoiceTrigger"
+                android:resource="@xml/todo_task_voice_trigger" />
+        </activity>
+
+        <service
+            android:name="glassproject.ubicomp.com.todo.activity.ToDoLiveCardService"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/to_do_service" >
+        </service>
+    </application>
+
+</manifest>
