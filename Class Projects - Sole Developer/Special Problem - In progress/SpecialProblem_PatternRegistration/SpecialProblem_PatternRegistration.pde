@@ -43,56 +43,6 @@ void setup() {               // executed once at the begining
   QS = new BSpline();
   RS = new BSpline();
   AS = new BSpline();
-  //  PS.addPt(P2(73.0, 693.0));
-  //  PS.addPt(P2(47.0, 578.0));
-  //  PS.addPt(P2(39.0, 476.0));
-  //  PS.addPt(P2(43.0, 354.0));
-  //  PS.addPt(P2(78.0, 242.0));
-  //  BufferedReader reader;
-  //  String line = "";  
-  //  reader = createReader("points.txt");
-  //  if (reader != null)
-  //  {
-  //    while (line!=null)
-  //    {
-  //      try {
-  //        line = reader.readLine(); 
-  //      } 
-  //      catch (IOException e) {
-  //        line = null;
-  //      }     
-  //      if (line != null && line != "")
-  //      {  
-  //        String[] pieces = split(line, ",");
-  //        float x = float(pieces[0]);
-  //        float y = float(pieces[1]);
-  //        PS.addPt(P2(x, y));
-  //      }
-  //    }
-  //  } else
-  //  {
-  //    for (int i = 0; i < maxComponentSize; i ++)
-  //    {
-  //      PS.addPt(P2(40.0 + i*70, 292.0));    //0
-  //      PS.addPt(P2(55.0 + i*70, 293.0));    //1
-  //      PS.addPt(P2(64.0 + i*70, 283.0));    //2
-  //      PS.addPt(P2(60.0 + i*70, 268.0));    //3
-  //      PS.addPt(P2(50.0 + i*70, 259.0));    //4
-  //      PS.addPt(P2(42.0 + i*70, 238.0));    //5
-  //      PS.addPt(P2(48.0 + i*70, 219.0));    //6
-  //      PS.addPt(P2(64.0 + i*70, 207.0));    //7
-  //      PS.addPt(P2(90.0 + i*70, 219.0));    //8
-  //      PS.addPt(P2(101.0 + i*70, 243.0));   //9
-  //      PS.addPt(P2(96.0 + i*70, 262.0));    //10  
-  //      PS.addPt(P2(81.0 + i*70, 253.0));    //11
-  //      PS.addPt(P2(76.0 + i*70, 235.0));    //12
-  //      PS.addPt(P2(65.0 + i*70, 248.0));    //13
-  //      PS.addPt(P2(71.0 + i*70, 263.0));    //14
-  //      PS.addPt(P2(77.0 + i*70, 279.0));    //15
-  //      PS.addPt(P2(88.0 + i*70, 283.0));    //16
-  //      PS.addPt(P2(102.0 + i*70, 285.0));   //17
-  //    }
-  //  }
 }
 
 
@@ -105,30 +55,6 @@ void draw() {      // executed at each frame
   background(white); // clear screen and paints white background
   stroke(blue);
   pen(black, 3); 
-  //  switch(selCurve)
-  //  {
-  //    case 1:      
-  //      fill(green);
-  //      if (showPts)PS.showPts();
-  //      PS.showCurve(0);
-  //      noFill();
-  //      break;
-  //    case 2:     
-  //      fill(red);   
-  //      if (showPts)QS.showPts();      
-  //      QS.showCurve(0);
-  //      noFill();
-  //      break;
-  //    case 3:
-  //      if (showPts)
-  //      {
-  //        fill(green);PS.showPts();noFill();
-  //        fill(red);QS.showPts();noFill();
-  //      }
-  //      fill(green);PS.showCurve(0);noFill();
-  //      fill(red);QS.showCurve(0);noFill();
-  //      break;
-  //    case 4:
   if (showPts)
   {
     PS.showPts(green);
@@ -148,35 +74,7 @@ void draw() {      // executed at each frame
   }
   if (register) 
   {
-    if (!selMod)
-    {
-      float a;   
-      if (distances)
-      {     
-        RS.copyTo(PS);
-        a=RS.distances(QS);
-        RS.registerTo(QS, a);
-        RS.showCurve(0, cyan);
-      }  
-      if (angles)
-      {    
-        RS.copyTo(PS);
-        a=PS.angles(QS);
-        RS.registerTo(QS, a);
-        RS.showCurve(0, metal);
-      }
-      if (moments)
-      {    
-        RS.copyTo(PS);
-        a=PS.moments(QS);
-        RS.registerTo(QS, a);
-        RS.showCurve(0, magenta);
-      }
-      RS = new BSpline();
-    } else
-    {
-      if(AS.curve.size()>0)PS.registerAndDraw(AS,magenta);
-    }
+    if(AS.curve.size()>0)PS.registerAndDraw(AS,magenta);
   }
   if(findAll)
   {
@@ -186,10 +84,6 @@ void draw() {      // executed at each frame
   fill(black);
   text("Use = and - to change error tolerance. Error tolerance is clamped between 1 and 10.\n Current Error tolerance count = " + errorCnt,1200,100);
   noFill();
-  //      break;  
-  //    default:
-  //      break;
-  //  }
 }  // end of draw()
 
 //**************************** user actions ****************************
@@ -225,18 +119,6 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
         lnCurv = 0;
       }
     }
-    if (key=='3')
-    {
-      distances = !distances;
-    }
-    if (key=='4')
-    {
-      angles = !angles;
-    }
-    if (key=='5')
-    {
-      moments = !moments;
-    }
     if(key=='6')
     {
       registrationOff = !registrationOff;
@@ -247,20 +129,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
       findAll = false;
       //      selCurve = 3;
     }
-    if (key=='f')
-    {
-      //      selCurve = 4;
-      switchGraphMode = !switchGraphMode;
-      registrationOff = false;
-    }
     if(key=='m')
     {
       findAll = !findAll;
       register = false;
-    }
-    if (key == 'p')
-    {
-      selMod = !selMod;
     }
     if (key == '=')
     {
