@@ -1,0 +1,18 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\LightSwitch.cs">
+    <Files>
+      <File FileName="Assets\Scripts\ScaryCorridorBehaviour.cs" Line="10" Column="28" />
+      <File FileName="Assets\Scripts\BetweenWallBehaviour.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MinimapUpdater.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\PlayerPusherScript.cs" Line="20" Column="4" />
+      <File FileName="Assets\Scripts\SkeletonMover.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\SkeletonController.cs" Line="22" Column="30" />
+      <File FileName="Assets\Scripts\LightSwitch.cs" Line="36" Column="27" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
