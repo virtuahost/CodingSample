@@ -498,25 +498,6 @@ class BSpline {
     for (int i=0; i<Q.cPts.size (); i++)addPt(P2(Q.cPts.get(i).x, Q.cPts.get(i).y));
   }
 
-  void registerAndDraw(BSpline Q, color reqdCol)
-  {
-    this.createArcLengthSample();
-    Q.createArcLengthSample();
-    int curvSize = Q.arcLengthSample.size();//Q.curve.size();
-    int lastCurveThreshold = -1;
-    for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
-    {
-      BSpline tempS = new BSpline();
-      tempS.copySampleCurve(this, i, i+curvSize-1);
-      Boolean bDraw = tempS.isSameCurve(Q); 
-      if (bDraw)
-      {
-        tempS.showSampleCurve(reqdCol);
-        i = i+curvSize-1;
-      }
-    }
-  }
-
   lstSqrTransf getLeastSquareTransform(BSpline P, BSpline Q, boolean fixedScale)
   {
     return getLeastSquareTransform(P.arcLengthSample, Q.arcLengthSample, fixedScale);
@@ -728,6 +709,19 @@ class BSpline {
       noFill();
     }
   }
+  
+  void showSampleCurvewithoutShift(color reqdClr)
+  {
+     if (curve.size() > 1 ) {
+
+      fill(reqdClr);
+      pen(reqdClr, 1);
+      for (int i=0; i<curve.size () - 1; i++) {
+        edge(curve.get(i), curve.get(i+1));
+      }
+      noFill();
+    }
+  }
 
   void createArcLengthSample()
   {  
@@ -864,10 +858,10 @@ class BSpline {
       remIndex = -1;
       for (float keyVal : dicOmegaSet.keySet ())
       {
-//        if (i==0) {
-//          i++;
-//          continue;
-//        }
+        //        if (i==0) {
+        //          i++;
+        //          continue;
+        //        }
         if (i==0) {
           start = dicOmegaSet.get(keyVal).allIndex.get(0);
           i++;
@@ -979,21 +973,46 @@ class BSpline {
     dicOmegaSet = sortedMap;
   } 
 
+  void copySampleCurvewithShift(BSpline Q, int start, int end,pt2 P)
+  {
+    arcLengthSample.clear();
+    float dist = d(Q.arcLengthSample.get(start),P);
+    vec2 transVec = V2(V2(Q.arcLengthSample.get(start),P).normalize().x,0.0f);
+//    println("Start");
+    for (int i=start; i<=end; i++)
+    {
+//      println("Old: " + Q.arcLengthSample.get(i));
+      arcLengthSample.add(P2(Q.arcLengthSample.get(i),dist,transVec));
+      curve.add(P2(Q.arcLengthSample.get(i)));
+//      println("New: " + arcLengthSample.get(i-start));
+    }
+//    println("End");
+  }
+
   int registerAndDraw(int start, int end, color reqdCol)
   {
     int k = 0;
     int curvSize = end - start+1;
+    Boolean bDraw = false;
     ArrayList<pt2> Q = new ArrayList<pt2>();
     for (int i = start; i <= end; i++)
     {
       Q.add(P2(arcLengthSample.get(i)));
     }
     this.showSampleCurve(Q, black);
-    for (int i=end+1; i<arcLengthSample.size ()-curvSize; i++) 
+    for (int i=(!useDTW?end+1:0); i<arcLengthSample.size ()-curvSize; i=i+curvSize) 
     {
       BSpline tempS = new BSpline();
-      tempS.copySampleCurve(this, i, i+curvSize-1);
-      Boolean bDraw = tempS.isSameCurve(tempS.arcLengthSample, Q); 
+      if(!useDTW)
+      {        
+        tempS.copySampleCurve(this, i, i+curvSize-1);
+        bDraw = tempS.isSameCurve(tempS.arcLengthSample, Q);
+      }
+      else
+      {
+        tempS.copySampleCurvewithShift(this, i, i+curvSize-1,Q.get(0));
+        float tempDist = calcDTWcost(tempS.arcLengthSample, Q);
+      } 
       if (bDraw)
       {
         k++;
@@ -1002,6 +1021,149 @@ class BSpline {
       }
     }
     return k;
+  }
+  
+  void registerAndDraw(BSpline Q, color reqdCol)
+  {
+    this.createArcLengthSample();
+    Q.createArcLengthSample();
+    Boolean bDraw = false;
+    int curvSize = Q.arcLengthSample.size();//Q.curve.size();
+    int lastCurveThreshold = curvSize/2;
+    int totThreshold = curvSize+lastCurveThreshold; 
+    if(!useDTW)
+    {
+      for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
+      {
+        BSpline tempS = new BSpline();
+        tempS.copySampleCurve(this, i, i+curvSize-1);
+        bDraw = tempS.isSameCurve(Q); 
+        if (bDraw)
+        {
+          tempS.showSampleCurve(reqdCol);
+          i = i+curvSize-1;
+        }
+      }
+    }
+    else
+    {
+      float refDist = 0;  
+      Q = new BSpline();
+      Q.copySampleCurve(this, 0, curvSize-1);        
+      pt2 P = P2(Q.arcLengthSample.get(0));   
+      BSpline refS = new BSpline();
+      refS.copySampleCurvewithShift(this, 0, curvSize-1,P);  
+      refDist = calcDTWcost(refS.arcLengthSample, Q.arcLengthSample);
+//      for (int i=0; i<arcLengthSample.size ()-totThreshold; i = i + totThreshold) 
+      for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
+      {
+//        for(int j=i; j<i+totThreshold; j++)
+//        {    
+//          for(int k=j+curvSize-1; k<i+totThreshold; k++)
+//          { 
+            int j = i + curvSize-1;
+//            while(j-i < totThreshold)
+//            {
+              BSpline tempS = new BSpline();
+  //            tempS.copySampleCurvewithShift(this, j, k,P);
+              tempS.copySampleCurvewithShift(this, i, j,P);
+              if(drawDebug)tempS.showSampleCurve(reqdCol);
+  //            tempS.copySampleCurvewithShift(this, curvSize*errorCnt, curvSize*(errorCnt+1)-1,P);  
+              float tempDist = calcDTWcost(tempS.arcLengthSample, Q.arcLengthSample);
+//              println(sq(refDist - tempDist));
+//              println(refDist);
+//              println(tempDist);
+              if(sq(refDist - tempDist) < 200)
+              {
+                tempS.showSampleCurvewithoutShift(reqdCol);
+//                tempS.showSampleCurve(reqdCol);
+                i = j;
+//                break;
+              }
+//              else
+//              {
+//                j++;
+//              }
+//            }
+//          }
+//        }
+      }
+    }
+  }
+
+  //DTW implementation
+  float calcDTWcost(ArrayList<pt2> P, ArrayList<pt2> Q)
+  {
+    float[][] locArr = new float[P.size()][Q.size()];
+    float[][] globalArr = new float[P.size()][Q.size()];
+    float calcDist = 0;
+    for (int i = 0; i < P.size (); i ++)
+    {
+      for (int j = 0; j < Q.size (); j ++)
+      {
+        locArr[i][j] = d2(P.get(i), Q.get(j));
+      }
+    }
+    globalArr[0][0] = locArr[0][0];
+    for (int i =1; i < P.size (); i ++)
+    {
+      globalArr[i][0]= locArr[i][0] + globalArr[i-1][0];
+    }    
+    for (int j =1; j < Q.size (); j ++)
+    {
+      globalArr[0][j]= locArr[0][j] + globalArr[0][j-1];
+    }
+    for (int i =1; i < P.size (); i ++)
+    {
+      for (int j =1; j < Q.size (); j ++)
+      {
+        calcDist = Math.min(Math.min(globalArr[i-1][j], globalArr[i][j-1]), globalArr[i-1][j-1]) + locArr[i][j];
+        globalArr[i][j] = calcDist;
+      }
+    }
+    int i = P.size()-1;
+    int j = Q.size()-1;
+    int k = 0; 
+    int minIndex = 0;
+      calcDist = globalArr[P.size()-1][Q.size()-1];
+
+    while ( (i+j) != 0)
+    {
+      if (i == 0) {
+        j -= 1;
+      } else if (j == 0) {
+        i -= 1;
+      } else {        // i != 0 && j != 0
+        double[] array = { 
+          globalArr[i - 1][j], globalArr[i][j - 1], globalArr[i - 1][j - 1]
+        };
+        minIndex = this.getIndexOfMinimum(array);
+
+        if (minIndex == 0) {
+          i -= 1;
+        } else if (minIndex == 1) {
+          j -= 1;
+        } else if (minIndex == 2) {
+          i -= 1;
+          j -= 1;
+        }
+      } // end else
+      k++;
+    } // end while
+    return calcDist / k;
+  }
+
+  int getIndexOfMinimum(double[] array) {
+    int index = 0;
+    double val = array[0];
+
+    for (int i = 1; i < array.length; i++) {
+      if (array[i] < val) {
+        val = array[i];
+        index = i;
+      }
+    }
+    return index;
   }
 }
 

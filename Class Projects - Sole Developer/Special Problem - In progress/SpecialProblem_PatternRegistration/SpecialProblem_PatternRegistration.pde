@@ -23,7 +23,7 @@ int sel=-1;
 int face = -1;
 int lnCurv = 0;
 float f=0;
-Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false,drawDebug=false,findAll=false;
+Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false,drawDebug=false,findAll=false,useDTW=false;
 pt2 edgeSt;
 pt2 cutEdgeSt;
 pt2 cutEdgeEnd;
@@ -32,7 +32,7 @@ int componentSize = 1;
 int maxComponentSize = 9;
 int patternSize = 17;
 int selCurve = 1;
-int errorCnt = 1;
+int errorCnt = 0;
 
 //**************************** initialization ****************************
 void setup() {               // executed once at the begining 
@@ -141,6 +141,12 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     if (key == '-')
     {
       errorCnt = (errorCnt == 1?1:errorCnt-1);
+    }
+    if(key == 'x')
+    {
+      useDTW = !useDTW;
+      findAll = (useDTW?false:findAll);
+      register = (useDTW?true:register);
     }
     if(key == 't')
     {
