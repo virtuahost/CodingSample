@@ -34,7 +34,7 @@ int patternSize = 17;
 int selCurve = 1;
 int errorCnt = 20;
 float arcLengthSampleSize = 0.5;
-float maxThresholdRad = 100;
+float maxThresholdRad = 500;
 float errVal = 0.00850878; 
 int maxPatternElem = 25;
 String infoText = "";
@@ -63,6 +63,7 @@ void draw() {      // executed at each frame
   background(white); // clear screen and paints white background
   stroke(blue);
   pen(black, 3); 
+  String tempTxt = "";
   if (showPts)
   {
     PS.showPts(green);
@@ -86,14 +87,13 @@ void draw() {      // executed at each frame
   }
   if(findAll)
   {
-    String tempTxt = PS.findAllAndDraw(magenta);
-    text("Elements found = " + tempTxt,1200,600);
+    tempTxt = PS.findAllAndDraw(magenta);
   }
   fill(metal);
   stroke(metal);
   rect(1500, 0, 300, 300);
   fill(black);
-  createDebugText();
+  createDebugText(tempTxt);
   fill(brown);
   stroke(brown);
   rect(1500, 300, 300, 200);
@@ -115,7 +115,7 @@ void createHelpText()
   text("P",1470,690);
   text("Key Info: \n a = add points,\n 1 = select base curve,\n 2 = select map curve,\n r = lsr mapping of 1 on 2,\n " 
   + "m = curvature mapping of 1,\n x = DTW mapping of 1,\n c = clear all,\n t = populate machine generated curve 1,\n n = curvature mapping of 1 using DTW,\n" 
-  + "6 = populate hand generated curve,\n =/- = modifies the number of errors allowed.\n e = Select different error criteria to modify.\n f = fixed scaling.",1500,530);
+  + "6 = populate hand generated curve,\n =/- = modifies the number of errors allowed.\n w/e = Select different error criteria to modify.\n f = fixed scaling.",1500,530);
 }
 
 void createInfoText()
@@ -139,7 +139,7 @@ void createInfoText()
   text(infoText,1500,330);
 }
 
-void createDebugText()
+void createDebugText(String tempTxt)
 {  
   text("D",1470,30);
   text("E",1470,50);
@@ -155,8 +155,10 @@ void createDebugText()
   debugText = debugText + "Arc length sample size: " + arcLengthSampleSize + "\n";
   debugText = debugText + "Threshold allowed in lsr: " + maxThresholdRad + "\n";
   debugText = debugText + "Curvature threshold allowed: " + errVal + "\n";
-  debugText = debugText + "Maximum pattern element allowed: " + maxPatternElem + "\n";
+  debugText = debugText + "Maximum pattern element allowed: " + maxPatternElem + "\n";  
   text(debugText,1500,30);
+  fill(magenta);  
+  text("Elements found = " + tempTxt,1500,200);
 }
 
 //**************************** user actions ****************************
@@ -192,7 +194,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
         lnCurv = 0;
       }
     }
-    if(key == 'e')
+    if(key == 'w')
     {
       selErr++;
       selErr = (selErr==5?0:selErr);
@@ -211,7 +213,30 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            displayText = "Featrue selected 'Curvature threshold allowed'";
            break;
         case 4: 
-           displayText = "Featrue selected 'Max Number of Pattern Element allowed'";
+           displayText = "Featrue selected 'Max Number of Pattern Element'";
+           break;
+      }
+    }
+    if(key == 'e')
+    {
+      selErr--;
+      selErr = (selErr<0?4:selErr);
+      switch(selErr)
+      {
+        case 0: 
+           displayText = "Featrue selected 'Error allowed'.";
+           break;
+        case 1: 
+           displayText = "Featrue selected 'Arc length sample size'";
+           break;
+        case 2: 
+           displayText = "Featrue selected 'Threshold allowed in lsr'";
+           break;
+        case 3: 
+           displayText = "Featrue selected 'Curvature threshold allowed'";
+           break;
+        case 4: 
+           displayText = "Featrue selected 'Max Number of Pattern Element'";
            break;
       }
     }
@@ -254,7 +279,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            maxThresholdRad = (maxThresholdRad > 1000?1000:maxThresholdRad+10);
            break;
         case 3: 
-           errVal = (errVal > 1?1:errVal+0.000000001);
+           errVal = (errVal > 1?1:errVal+0.00001);
            break;
         case 4:
            maxPatternElem = (maxPatternElem == 100?100:maxPatternElem+1);
@@ -275,7 +300,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            maxThresholdRad = (maxThresholdRad < 1?1:maxThresholdRad-10);
            break;
         case 3: 
-           errVal = (errVal < 0.000000001?0.000000001:errVal-0.000000001);
+           errVal = (errVal < 0.00001?0.00001:errVal-0.00001);
            break;
         case 4:
            maxPatternElem = (maxPatternElem == 1?1:maxPatternElem-1);

@@ -564,15 +564,15 @@ class BSpline {
       //Least Square Implementation
       temp.add(applyTransform(P.get(i), transf));
     }
-    if (drawDebug)
-    {
-      fill(black);
-      pen(black, 1);
-      for (int i=0; i<temp.size ()-1; i++) {
-        edge(temp.get(i), temp.get(i+1));
-      }
-      noFill();
-    }
+//    if (drawDebug)
+//    {
+//      fill(black);
+//      pen(black, 1);
+//      for (int i=0; i<temp.size ()-1; i++) {
+//        edge(temp.get(i), temp.get(i+1));
+//      }
+//      noFill();
+//    }
     for (int i = 1; i < Q.size ()-2; i++)
     {
       if (d2(Q.get(i), temp.get(i)) > maxThresholdRad)
@@ -844,41 +844,43 @@ class BSpline {
     int start = -1;
     int end = -1;
     int finalVal = 0;
+    int finalStart = -1;
+    int finalEnd = -1;
     int newVal = 0;    
     float remIndex = -1;
     boolean process = false;
     float removeVal = -1;
+    int size = 0;
     do
     {
       process = false;
       for (float keyVal : dicOmegaSet.keySet ())
       {
+        if(drawDebug){arcLengthSample.get(dicOmegaSet.get(keyVal).allIndex.get(0)).tag(String.valueOf(keyVal),10);}
         if(dicOmegaSet.get(keyVal).cntVal < medianVal)
         {
-//          start = dicOmegaSet.get(keyVal).allIndex.get(0);
-//          end = (dicOmegaSet.get(keyVal).allIndex.get(0) + dicOmegaSet.get(keyVal).allIndex.get(1))/2;
-          if(end < dicOmegaSet.get(keyVal).allIndex.get(0))
-          {
-            end = dicOmegaSet.get(keyVal).allIndex.get(0);
-            removeVal = keyVal;
-            process = true;
-          }
-//          break;
+          end = dicOmegaSet.get(keyVal).allIndex.get(0);
+          size = dicOmegaSet.get(keyVal).allIndex.size();
+          removeVal = keyVal;
+          process = true;
+          break;
         }
       }
       
       if(removeVal > -1)dicOmegaSet.remove(removeVal);
       start = 0;
-      if (start>-1&&end>-1&&(end-start>this.arcLengthSample.size()/maxPatternElem))newVal = registerAndDraw(start, end, reqdClr,false);      
-//      println(start + ", " + end + ", " + remIndex + ", " + finalVal + ", " + newVal);
-      if(remIndex < (end - start)&&(finalVal < newVal))
+      if (start>-1&&end>-1&&(end-start>this.arcLengthSample.size()/maxPatternElem))newVal = registerAndDraw(start, end, reqdClr,false);
+      println("End: " + end + "Newval: "+ newVal + "finalVal: " + finalVal);
+      if((newVal < size)&&(newVal > 1)&&(finalVal<=newVal))
       {
         remIndex = end - start;
+        finalStart = start;
+        finalEnd = end;
         finalVal = newVal;
-        registerAndDraw(start, end, reqdClr,true);
       }
     }
-    while(process);
+    while(process);    
+    if(finalEnd > -1)registerAndDraw(finalStart, finalEnd, reqdClr,true);
     return finalVal;
   }
 
@@ -890,18 +892,21 @@ class BSpline {
       pt2 A = arcLengthSample.get(i-1);
       pt2 B = arcLengthSample.get(i);
       pt2 C = arcLengthSample.get(i+1);
+      vec2 V1 = U(V2(A,B));
+      vec2 V2 = U(V2(B,C));
       float AB = d(A, B);
       float BC = d(B, C);
       float CA = d(C, A);
       float P = (AB+BC+CA)/2;
       float areaABC = sqrt(P*(P-AB)*(P-BC)*(P-CA));
       float curvVal = 4*areaABC/(AB*BC*CA);
-      if ((AB*BC*CA) == 0)curvVal = 1;
+      float angle = angle(V1,V2);
+      if ((AB*BC*CA) == 0)curvVal = 1; 
       arcSampleCurvChange.add(curvVal);
-      float tempVal = findKeyVal(curvVal);
+      float tempVal = findKeyVal(curvVal,angle);
       if (tempVal == -1)
       {
-        Genom keyVal = new Genom(1, i);
+        Genom keyVal = new Genom(1, i,angle);
         dicOmegaSet.put(curvVal, keyVal);
       } else
       {
@@ -914,13 +919,24 @@ class BSpline {
     this.sortHashMapByValues();
   }
 
-  float findKeyVal(float curvVal)
+  float findKeyVal(float curvVal,float angle)
   {
+    boolean neg = false;
+    if(angle < 0)neg=true;
     if (dicOmegaSet.size() > 0)
     {
       for (Float keyVal : dicOmegaSet.keySet ())
       {
-        if (curvVal-errVal <= keyVal && keyVal <= curvVal+errVal)
+        boolean check = false;
+        if(neg && dicOmegaSet.get(keyVal).angle < 0)
+        {
+          check = true;
+        }
+        else if(!neg && dicOmegaSet.get(keyVal).angle >= 0)
+        {
+          check = true;
+        }
+        if (check && curvVal-errVal <= keyVal && keyVal <= curvVal+errVal)
         {
           return keyVal;
         }
@@ -952,7 +968,7 @@ class BSpline {
         if (compVal.cntVal > tempVal.cntVal)
         {
           updKey = keyAct;
-          tempVal = new Genom(compVal.cntVal, compVal.allIndex);
+          tempVal = new Genom(compVal.cntVal, compVal.allIndex,compVal.angle);
         }
       }
       if(lowVal > tempVal.cntVal && tempVal.cntVal > 1)lowVal = tempVal.cntVal;
@@ -964,15 +980,15 @@ class BSpline {
       }
     }   
     medianVal = (highVal + lowVal)/2;    
-    if (drawDebug)
-    {
-      println("Start: " + dicOmegaSet.size());
-      for (Genom keyVal : sortedMap.values ())
-      {
-        println("Val: " + keyVal.cntVal);
-      }
-      println("Size: " + sortedMap.size());
-    }
+//    if (drawDebug)
+//    {
+//      println("Start: " + dicOmegaSet.size());
+//      for (Genom keyVal : sortedMap.values ())
+//      {
+//        println("Val: " + keyVal.cntVal);
+//      }
+//      println("Size: " + sortedMap.size());
+//    }
     dicOmegaSet = sortedMap;
   } 
 
@@ -1025,7 +1041,45 @@ class BSpline {
     }
     else
     {
-      
+      float refDist = 0;       
+      pt2 P = P2(Q.get(0));   
+      BSpline refS = new BSpline();
+      refS.copySampleCurvewithShift(this, 0, curvSize-1,P);  
+      refDist = calcDTWcost(refS.arcLengthSample, Q);
+//      for (int i=0; i<arcLengthSample.size ()-totThreshold; i = i + totThreshold) 
+      for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
+      {
+//        for(int j=i; j<i+totThreshold; j++)
+//        {    
+//          for(int k=j+curvSize-1; k<i+totThreshold; k++)
+//          { 
+            int j = i + curvSize-1;
+//            while(j-i < totThreshold)
+//            {
+              BSpline tempS = new BSpline();
+  //            tempS.copySampleCurvewithShift(this, j, k,P);
+              tempS.copySampleCurvewithShift(this, i, j,P);
+//              if(drawDebug)tempS.showSampleCurve(reqdCol);
+  //            tempS.copySampleCurvewithShift(this, curvSize*errorCnt, curvSize*(errorCnt+1)-1,P);  
+              float tempDist = calcDTWcost(tempS.arcLengthSample, Q);
+//              println(sq(refDist - tempDist));
+//              println(refDist);
+//              println(tempDist);
+              if(sq(refDist - tempDist) < 200)
+              {
+                tempS.showSampleCurvewithoutShift(reqdCol);
+//                tempS.showSampleCurve(reqdCol);
+                i = j;
+//                break;
+              }
+//              else
+//              {
+//                j++;
+//              }
+//            }
+//          }
+//        }
+      }
     }
     return k;
   }
@@ -1074,7 +1128,7 @@ class BSpline {
               BSpline tempS = new BSpline();
   //            tempS.copySampleCurvewithShift(this, j, k,P);
               tempS.copySampleCurvewithShift(this, i, j,P);
-              if(drawDebug)tempS.showSampleCurve(reqdCol);
+//              if(drawDebug)tempS.showSampleCurve(reqdCol);
   //            tempS.copySampleCurvewithShift(this, curvSize*errorCnt, curvSize*(errorCnt+1)-1,P);  
               float tempDist = calcDTWcost(tempS.arcLengthSample, Q.arcLengthSample);
 //              println(sq(refDist - tempDist));
