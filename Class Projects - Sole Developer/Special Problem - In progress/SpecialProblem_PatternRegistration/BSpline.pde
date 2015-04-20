@@ -15,9 +15,7 @@ class BSpline {
   color curveClr = green;
   float circleRadius = 10;
   int isNotInThreshold = 0;
-  float arcLengthSampleSize = 1;
-  float maxThresholdRad = 100;
-  float errVal = 0.00850878;
+  int medianVal = 0;
 
   BSpline() { 
     cPts = new ArrayList<pt2>();
@@ -560,7 +558,7 @@ class BSpline {
   {
     Boolean result = true;
     ArrayList<pt2> temp = new ArrayList<pt2>();
-    lstSqrTransf transf = getLeastSquareTransform(P, Q, true);
+    lstSqrTransf transf = getLeastSquareTransform(P, Q, fixedScale);
     for (int i=0; i<P.size (); i++)
     {
       //Least Square Implementation
@@ -848,40 +846,40 @@ class BSpline {
     int finalVal = 0;
     int newVal = 0;    
     float remIndex = -1;
+    boolean process = false;
+    float removeVal = -1;
     do
     {
-      if (finalVal < newVal)finalVal = newVal;
-      if (remIndex>-1)dicOmegaSet.remove(remIndex);
-      start = -1;
-      end = -1;
-      i = 0;
-      remIndex = -1;
+      process = false;
       for (float keyVal : dicOmegaSet.keySet ())
       {
-        //        if (i==0) {
-        //          i++;
-        //          continue;
-        //        }
-        if (i==0) {
-          start = dicOmegaSet.get(keyVal).allIndex.get(0);
-          i++;
-          continue;
-        }
-        if (i==1) {
-          if (start > dicOmegaSet.get(keyVal).allIndex.get(0) && dicOmegaSet.get(keyVal).cntVal > 2) {
-            start = dicOmegaSet.get(keyVal).allIndex.get(0);
-          }
-          if (end < dicOmegaSet.get(keyVal).allIndex.get(0) && (start < end||end == -1)&& dicOmegaSet.get(keyVal).cntVal > 2) {
+        if(dicOmegaSet.get(keyVal).cntVal < medianVal)
+        {
+//          start = dicOmegaSet.get(keyVal).allIndex.get(0);
+//          end = (dicOmegaSet.get(keyVal).allIndex.get(0) + dicOmegaSet.get(keyVal).allIndex.get(1))/2;
+          if(end < dicOmegaSet.get(keyVal).allIndex.get(0))
+          {
             end = dicOmegaSet.get(keyVal).allIndex.get(0);
-            remIndex=keyVal;
+            removeVal = keyVal;
+            process = true;
           }
+//          break;
         }
       }
-      if (start>-1&&end>-1&&(end-start>100))newVal = registerAndDraw(start, end, reqdClr);
-      newVal = (newVal == 1?0:newVal);
+      
+      if(removeVal > -1)dicOmegaSet.remove(removeVal);
+      start = 0;
+      if (start>-1&&end>-1&&(end-start>this.arcLengthSample.size()/maxPatternElem))newVal = registerAndDraw(start, end, reqdClr,false);      
+//      println(start + ", " + end + ", " + remIndex + ", " + finalVal + ", " + newVal);
+      if(remIndex < (end - start)&&(finalVal < newVal))
+      {
+        remIndex = end - start;
+        finalVal = newVal;
+        registerAndDraw(start, end, reqdClr,true);
+      }
     }
-    while (start > -1 && end > -1); //|| finalVal == 0)&&dicOmegaSet.size() > 0);    
-    return (newVal > finalVal?newVal:finalVal);
+    while(process);
+    return finalVal;
   }
 
   void createSampleSimilaritySet()
@@ -934,6 +932,8 @@ class BSpline {
   void sortHashMapByValues() {
     LinkedHashMap<Float, Genom> sortedMap = new LinkedHashMap<Float, Genom>();
     LinkedHashMap<Float, Genom> ignoreKeys = new LinkedHashMap<Float, Genom>();
+    int highVal = 0;
+    int lowVal = 0;
     for (float keyVal : dicOmegaSet.keySet ())
     {
       Genom tempVal = new Genom();
@@ -955,12 +955,15 @@ class BSpline {
           tempVal = new Genom(compVal.cntVal, compVal.allIndex);
         }
       }
-      if (tempVal.cntVal > -1)
+      if(lowVal > tempVal.cntVal && tempVal.cntVal > 1)lowVal = tempVal.cntVal;
+      if(highVal < tempVal.cntVal && tempVal.cntVal < maxPatternElem)highVal = tempVal.cntVal;
+      if (tempVal.cntVal > 1)
       {
         sortedMap.put(updKey, tempVal);
         ignoreKeys.put(updKey, tempVal);
       }
-    }        
+    }   
+    medianVal = (highVal + lowVal)/2;    
     if (drawDebug)
     {
       println("Start: " + dicOmegaSet.size());
@@ -988,8 +991,13 @@ class BSpline {
     }
 //    println("End");
   }
-
+  
   int registerAndDraw(int start, int end, color reqdCol)
+  {
+    return registerAndDraw(start, end, reqdCol, true);
+  }
+
+  int registerAndDraw(int start, int end, color reqdCol, boolean draw)
   {
     int k = 0;
     int curvSize = end - start+1;
@@ -999,26 +1007,25 @@ class BSpline {
     {
       Q.add(P2(arcLengthSample.get(i)));
     }
-    this.showSampleCurve(Q, black);
-    for (int i=(!useDTW?end+1:0); i<arcLengthSample.size ()-curvSize; i=i+curvSize) 
+    if(draw)this.showSampleCurve(Q, black);
+    if(!useDTW)
     {
-      BSpline tempS = new BSpline();
-      if(!useDTW)
-      {        
+      for (int i=end+1; i<arcLengthSample.size ()-curvSize; i++) 
+      {
+        BSpline tempS = new BSpline();
         tempS.copySampleCurve(this, i, i+curvSize-1);
         bDraw = tempS.isSameCurve(tempS.arcLengthSample, Q);
+        if (bDraw)
+        {
+          k++;
+          if(draw)tempS.showSampleCurve(reqdCol);
+          i = i+curvSize-1;
+        }
       }
-      else
-      {
-        tempS.copySampleCurvewithShift(this, i, i+curvSize-1,Q.get(0));
-        float tempDist = calcDTWcost(tempS.arcLengthSample, Q);
-      } 
-      if (bDraw)
-      {
-        k++;
-        tempS.showSampleCurve(reqdCol);
-        i = i+curvSize-1;
-      }
+    }
+    else
+    {
+      
     }
     return k;
   }

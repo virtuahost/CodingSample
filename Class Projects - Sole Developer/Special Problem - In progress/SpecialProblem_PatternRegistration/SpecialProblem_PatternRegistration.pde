@@ -23,7 +23,7 @@ int sel=-1;
 int face = -1;
 int lnCurv = 0;
 float f=0;
-Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false,drawDebug=false,findAll=false,useDTW=false;
+Boolean edgeMode = false, addingPoint=true, showPts=true, register = false, angles = true, moments = true, distances = true, selMod = true,switchGraphMode = false,registrationOff=false,drawDebug=false,findAll=false,useDTW=false, fixedScale = true;
 pt2 edgeSt;
 pt2 cutEdgeSt;
 pt2 cutEdgeEnd;
@@ -32,7 +32,15 @@ int componentSize = 1;
 int maxComponentSize = 9;
 int patternSize = 17;
 int selCurve = 1;
-int errorCnt = 0;
+int errorCnt = 20;
+float arcLengthSampleSize = 0.5;
+float maxThresholdRad = 100;
+float errVal = 0.00850878; 
+int maxPatternElem = 25;
+String infoText = "";
+String debugText = "";
+int selErr = 0;
+String displayText = "Featrue selected 'Error allowed'.";
 
 //**************************** initialization ****************************
 void setup() {               // executed once at the begining 
@@ -81,10 +89,75 @@ void draw() {      // executed at each frame
     String tempTxt = PS.findAllAndDraw(magenta);
     text("Elements found = " + tempTxt,1200,600);
   }
+  fill(metal);
+  stroke(metal);
+  rect(1500, 0, 300, 300);
   fill(black);
-  text("Use = and - to change error tolerance. Error tolerance is clamped between 1 and 10.\n Current Error tolerance count = " + errorCnt,1200,100);
+  createDebugText();
+  fill(brown);
+  stroke(brown);
+  rect(1500, 300, 300, 200);
+  fill(black);
+  createInfoText();
+  fill(orange);
+  stroke(orange);
+  rect(1500, 500, 300, 300);
+  fill(black);
+  createHelpText();
   noFill();
 }  // end of draw()
+
+void createHelpText()
+{
+  text("H",1470,630);
+  text("E",1470,650);
+  text("L",1470,670);
+  text("P",1470,690);
+  text("Key Info: \n a = add points,\n 1 = select base curve,\n 2 = select map curve,\n r = lsr mapping of 1 on 2,\n " 
+  + "m = curvature mapping of 1,\n x = DTW mapping of 1,\n c = clear all,\n t = populate machine generated curve 1,\n n = curvature mapping of 1 using DTW,\n" 
+  + "6 = populate hand generated curve,\n =/- = modifies the number of errors allowed.\n e = Select different error criteria to modify.\n f = fixed scaling.",1500,530);
+}
+
+void createInfoText()
+{
+  text("M",1470,330);
+  text("O",1470,350);
+  text("D",1470,370);
+  text("E",1470,390);
+  text("I",1470,420);
+  text("N",1470,440);
+  text("F",1470,460);
+  text("O",1470,480);
+  fill(green);
+  infoText = "Curve selected = " + selCurve +"\n ";
+  infoText = infoText + "add mode = " + addingPoint +"\n ";
+  infoText = infoText + "drag mode = " + !addingPoint +"\n ";
+  infoText = infoText + "using curvature = " + findAll +"\n ";
+  infoText = infoText + "using lsr = " + register +"\n ";
+  infoText = infoText + "using DTW = " + useDTW +"\n ";
+  infoText = infoText + "using fixed scale = " + fixedScale +"\n ";
+  text(infoText,1500,330);
+}
+
+void createDebugText()
+{  
+  text("D",1470,30);
+  text("E",1470,50);
+  text("B",1470,70);
+  text("U",1470,90);
+  text("G",1470,110);
+  text("I",1470,140);
+  text("N",1470,160);
+  text("F",1470,180);
+  text("O",1470,200);
+  debugText = displayText + "\n";
+  debugText = debugText + "Error allowed: " + errorCnt + "\n";
+  debugText = debugText + "Arc length sample size: " + arcLengthSampleSize + "\n";
+  debugText = debugText + "Threshold allowed in lsr: " + maxThresholdRad + "\n";
+  debugText = debugText + "Curvature threshold allowed: " + errVal + "\n";
+  debugText = debugText + "Maximum pattern element allowed: " + maxPatternElem + "\n";
+  text(debugText,1500,30);
+}
 
 //**************************** user actions ****************************
 void keyPressed() { // executed each time a key is pressed: sets the "keyPressed" and "key" state variables, 
@@ -93,7 +166,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
   {
     if (key=='a') {
       addingPoint = !addingPoint;
-      showPts = addingPoint;
+//      showPts = addingPoint;
     }
     if (key=='s') {
       showPts = !showPts;
@@ -109,15 +182,42 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     {
       if (!selMod)
       {
-        selCurve = 2;
+        selCurve = 3;
       } else
       {
-        selCurve = 3;
+        selCurve = 2;
         AS = new BSpline();
         cutEdgeEnd = P2();
         cutEdgeSt = P2();
         lnCurv = 0;
       }
+    }
+    if(key == 'e')
+    {
+      selErr++;
+      selErr = (selErr==5?0:selErr);
+      switch(selErr)
+      {
+        case 0: 
+           displayText = "Featrue selected 'Error allowed'.";
+           break;
+        case 1: 
+           displayText = "Featrue selected 'Arc length sample size'";
+           break;
+        case 2: 
+           displayText = "Featrue selected 'Threshold allowed in lsr'";
+           break;
+        case 3: 
+           displayText = "Featrue selected 'Curvature threshold allowed'";
+           break;
+        case 4: 
+           displayText = "Featrue selected 'Max Number of Pattern Element allowed'";
+           break;
+      }
+    }
+    if(key == 'f')
+    {
+      fixedScale = !fixedScale;
     }
     if(key=='6')
     {
@@ -134,13 +234,53 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
       findAll = !findAll;
       register = false;
     }
+    if(key=='n')
+    {
+      findAll = !findAll;
+      register = false;
+      useDTW = findAll;
+    }
     if (key == '=')
     {
-      errorCnt = (errorCnt == 10?10:errorCnt+1);
+      switch(selErr)
+      {
+        case 0: 
+           errorCnt = (errorCnt == 100?100:errorCnt+1);
+           break;
+        case 1: 
+           arcLengthSampleSize = (arcLengthSampleSize == 10?10:arcLengthSampleSize+0.1);
+           break;
+        case 2: 
+           maxThresholdRad = (maxThresholdRad > 1000?1000:maxThresholdRad+10);
+           break;
+        case 3: 
+           errVal = (errVal > 1?1:errVal+0.000000001);
+           break;
+        case 4:
+           maxPatternElem = (maxPatternElem == 100?100:maxPatternElem+1);
+           break;
+      }        
     }
     if (key == '-')
     {
-      errorCnt = (errorCnt == 1?1:errorCnt-1);
+      switch(selErr)
+      {
+        case 0: 
+           errorCnt = (errorCnt == 1?1:errorCnt-1);
+           break;
+        case 1: 
+           arcLengthSampleSize = (arcLengthSampleSize == 0.1?0.1:arcLengthSampleSize-0.1);
+           break;
+        case 2: 
+           maxThresholdRad = (maxThresholdRad < 1?1:maxThresholdRad-10);
+           break;
+        case 3: 
+           errVal = (errVal < 0.000000001?0.000000001:errVal-0.000000001);
+           break;
+        case 4:
+           maxPatternElem = (maxPatternElem == 1?1:maxPatternElem-1);
+           break;
+      }  
     }
     if(key == 'x')
     {
@@ -196,9 +336,10 @@ void mousePressed() {  // executed when the mouse is pressed
   if (addingPoint) {
     edgeMode = true;
     edgeSt = Mouse2();
+    if(edgeSt.x > 1500) return;
     if (selCurve == 1)PS.addPt(Mouse2());
-    if (selCurve == 2)QS.addPt(Mouse2());
-    if(selCurve == 3 && lnCurv < 2)
+    if (selCurve == 3)QS.addPt(Mouse2());
+    if(selCurve == 2 && lnCurv < 2)
     {
       lnCurv++;
       if(lnCurv == 2)
@@ -225,7 +366,7 @@ void mouseDragged() {
       PS.moveCPt(scp, MouseDrag2D());
     }
     break;
-  case 2:
+  case 3:
     if (QS.cPts.size () >= 5)
     {
       QS.moveCPt(scp, MouseDrag2D());
