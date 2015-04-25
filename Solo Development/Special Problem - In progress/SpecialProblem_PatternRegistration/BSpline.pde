@@ -854,9 +854,10 @@ class BSpline {
     do
     {
       process = false;
+      end = -1;
       for (float keyVal : dicOmegaSet.keySet ())
       {
-        if(drawDebug){arcLengthSample.get(dicOmegaSet.get(keyVal).allIndex.get(0)).tag(String.valueOf(keyVal),10);}
+        if(drawDebug){fill(red);stroke(red);arcLengthSample.get(dicOmegaSet.get(keyVal).allIndex.get(0)).tag(String.valueOf(dicOmegaSet.get(keyVal).cntVal),10);noFill();}
         if(dicOmegaSet.get(keyVal).cntVal < medianVal)
         {
           end = dicOmegaSet.get(keyVal).allIndex.get(0);
