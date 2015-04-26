@@ -36,6 +36,7 @@ int errorCnt = 20;
 float arcLengthSampleSize = 0.5;
 float maxThresholdRad = 500;
 float errVal = 0.0085; 
+float dtwErrVal = 200;
 int maxPatternElem = 25;
 String infoText = "";
 String debugText = "";
@@ -155,7 +156,8 @@ void createDebugText(String tempTxt)
   debugText = debugText + "Arc length sample size: " + arcLengthSampleSize + "\n";
   debugText = debugText + "Threshold allowed in lsr: " + maxThresholdRad + "\n";
   debugText = debugText + "Curvature threshold allowed: " + errVal + "\n";
-  debugText = debugText + "Maximum pattern element allowed: " + maxPatternElem + "\n";  
+  debugText = debugText + "Maximum pattern element allowed: " + maxPatternElem + "\n";
+  debugText = debugText + "DTW Error constraint value: " + dtwErrVal + "\n";    
   text(debugText,1500,30);
   fill(magenta);  
   text("Elements found = " + tempTxt,1500,200);
@@ -197,7 +199,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
     if(key == 'w')
     {
       selErr++;
-      selErr = (selErr==5?0:selErr);
+      selErr = (selErr==6?0:selErr);
       switch(selErr)
       {
         case 0: 
@@ -214,13 +216,16 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            break;
         case 4: 
            displayText = "Featrue selected 'Max Number of Pattern Element'";
+           break;
+        case 5: 
+           displayText = "Featrue selected 'DTW Error constraint value.'";
            break;
       }
     }
     if(key == 'e')
     {
       selErr--;
-      selErr = (selErr<0?4:selErr);
+      selErr = (selErr<0?5:selErr);
       switch(selErr)
       {
         case 0: 
@@ -237,6 +242,9 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            break;
         case 4: 
            displayText = "Featrue selected 'Max Number of Pattern Element'";
+           break;
+        case 5: 
+           displayText = "Featrue selected 'DTW Error constraint value.'";
            break;
       }
     }
@@ -284,6 +292,9 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
         case 4:
            maxPatternElem = (maxPatternElem == 100?100:maxPatternElem+1);
            break;
+        case 5:
+           dtwErrVal = (dtwErrVal == 1000?1000:dtwErrVal+1);
+           break;
       }        
     }
     if (key == '-')
@@ -305,6 +316,9 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
         case 4:
            maxPatternElem = (maxPatternElem == 1?1:maxPatternElem-1);
            break;
+        case 5:
+           dtwErrVal = (dtwErrVal == 100?100:dtwErrVal-1);
+           break;
       }  
     }
     if(key == 'x')
@@ -312,6 +326,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
       useDTW = !useDTW;
       findAll = (useDTW?false:findAll);
       register = (useDTW?true:register);
+      if(AS.curve.size()>0)PS.registerDTW(AS,magenta);
     }
     if(key == 't')
     {

@@ -9,6 +9,7 @@ class BSpline {
   ArrayList<pt2> arcLengthSampleDraw;
   ArrayList<Float> arcSampleCurvChange;
   LinkedHashMap<Float, Genom> dicOmegaSet;
+  LinkedHashMap<Integer, Integer> dicDTWKey;
   Float rad = 5.0;
   boolean radMode = false; // to enable editing radius of control points
   int cType = 1;
@@ -32,6 +33,7 @@ class BSpline {
     botCap = new ArrayList<pt2>();
     arcSampleCurvChange = new ArrayList<Float>();
     dicOmegaSet = new LinkedHashMap<Float, Genom>();
+    dicDTWKey = new LinkedHashMap<Integer, Integer>();
     //Changes for 3D manipulation Start
     //Changes for 3D manipulation End
   } 
@@ -1109,46 +1111,37 @@ class BSpline {
     }
     else
     {
-      float refDist = 0;  
-      Q = new BSpline();
-      Q.copySampleCurve(this, 0, curvSize-1);        
-      pt2 P = P2(Q.arcLengthSample.get(0));   
-      BSpline refS = new BSpline();
-      refS.copySampleCurvewithShift(this, 0, curvSize-1,P);  
-      refDist = calcDTWcost(refS.arcLengthSample, Q.arcLengthSample);
-//      for (int i=0; i<arcLengthSample.size ()-totThreshold; i = i + totThreshold) 
-      for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
+      //Moved to function registerDTW to help with performance
+      for(int keyAct : dicDTWKey.keySet ())
       {
-//        for(int j=i; j<i+totThreshold; j++)
-//        {    
-//          for(int k=j+curvSize-1; k<i+totThreshold; k++)
-//          { 
-            int j = i + curvSize-1;
-//            while(j-i < totThreshold)
-//            {
-              BSpline tempS = new BSpline();
-  //            tempS.copySampleCurvewithShift(this, j, k,P);
-              tempS.copySampleCurvewithShift(this, i, j,P);
-//              if(drawDebug)tempS.showSampleCurve(reqdCol);
-  //            tempS.copySampleCurvewithShift(this, curvSize*errorCnt, curvSize*(errorCnt+1)-1,P);  
-              float tempDist = calcDTWcost(tempS.arcLengthSample, Q.arcLengthSample);
-//              println(sq(refDist - tempDist));
-//              println(refDist);
-//              println(tempDist);
-              if(sq(refDist - tempDist) < 200)
-              {
-                tempS.showSampleCurvewithoutShift(reqdCol);
-//                tempS.showSampleCurve(reqdCol);
-                i = j;
-//                break;
-              }
-//              else
-//              {
-//                j++;
-//              }
-//            }
-//          }
-//        }
+        BSpline tempS = new BSpline();
+        tempS.copySampleCurve(this, keyAct, dicDTWKey.get(keyAct));
+        tempS.showSampleCurve(reqdCol);
+      }
+    }
+  }
+  
+  void registerDTW(BSpline Q, color reqdCol)
+  {    
+    this.createArcLengthSample();
+    Q.createArcLengthSample();
+    float refDist = 0;
+    int curvSize = Q.arcLengthSample.size();
+    pt2 P = P2(Q.arcLengthSample.get(0));   
+    BSpline refS = new BSpline();
+    refS.copySampleCurvewithShift(this, 0, curvSize-1,P);  
+    refDist = calcDTWcost(refS.arcLengthSample, Q.arcLengthSample);
+    for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
+    {
+      int j = i + curvSize-1;
+      BSpline tempS = new BSpline();
+      tempS.copySampleCurvewithShift(this, i, j,P);
+      float tempDist = calcDTWcost(tempS.arcLengthSample, Q.arcLengthSample);
+      if(sq(refDist - tempDist) < dtwErrVal*dtwErrVal)
+      {
+//        tempS.showSampleCurvewithoutShift(reqdCol);
+        this.dicDTWKey.put(i,j);
+        i = j;
       }
     }
   }
