@@ -36,7 +36,7 @@ int errorCnt = 20;
 float arcLengthSampleSize = 0.5;
 float maxThresholdRad = 500;
 float errVal = 0.0085; 
-float dtwErrVal = 200;
+float dtwErrVal = 80;
 int maxPatternElem = 25;
 String infoText = "";
 String debugText = "";
@@ -115,8 +115,8 @@ void createHelpText()
   text("L",1470,670);
   text("P",1470,690);
   text("Key Info: \n a = add points,\n 1 = select base curve,\n 2 = select map curve,\n r = lsr mapping of 1 on 2,\n " 
-  + "m = curvature mapping of 1,\n x = DTW mapping of 1,\n c = clear all,\n t = populate machine generated curve 1,\n n = curvature mapping of 1 using DTW,\n" 
-  + "6 = populate hand generated curve,\n =/- = modifies the number of errors allowed.\n w/e = Select different error criteria to modify.\n f = fixed scaling.",1500,530);
+  + "m = curvature mapping of 1,\n x = turn on DTW drawing mode,\n c = clear all,\n t = populate machine generated curve 1,\n n = curvature mapping of 1 using DTW,\n" 
+  + "6 = populate hand generated curve,\n =/- = modifies the number of errors allowed.\n w/e = Select different error criteria to modify.\n f = fixed scaling. \n p = process for DTW.",1500,530);
 }
 
 void createInfoText()
@@ -326,7 +326,12 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
       useDTW = !useDTW;
       findAll = (useDTW?false:findAll);
       register = (useDTW?true:register);
-      if(AS.curve.size()>0)PS.registerDTW(AS,magenta);
+    }
+    if(key=='p' && useDTW)
+    {     
+      println("Processing: Start"); 
+      if(AS.curve.size()>0)PS.registerDTW(AS);
+      println("Processing: End");
     }
     if(key == 't')
     {
