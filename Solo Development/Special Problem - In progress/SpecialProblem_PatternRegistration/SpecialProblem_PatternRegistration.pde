@@ -278,10 +278,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
       switch(selErr)
       {
         case 0: 
-           errorCnt = (errorCnt == 100?100:errorCnt+1);
+           errorCnt = (errorCnt > 100?100:errorCnt+1);
            break;
         case 1: 
-           arcLengthSampleSize = (arcLengthSampleSize == 10?10:arcLengthSampleSize+0.1);
+           arcLengthSampleSize = (arcLengthSampleSize > 10?10:arcLengthSampleSize+0.1);
            break;
         case 2: 
            maxThresholdRad = (maxThresholdRad > 1000?1000:maxThresholdRad+10);
@@ -290,10 +290,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            errVal = (errVal > 1?1:errVal+0.00001);
            break;
         case 4:
-           maxPatternElem = (maxPatternElem == 100?100:maxPatternElem+1);
+           maxPatternElem = (maxPatternElem > 100?100:maxPatternElem+1);
            break;
         case 5:
-           dtwErrVal = (dtwErrVal == 1000?1000:dtwErrVal+1);
+           dtwErrVal = (dtwErrVal > 1000?1000:dtwErrVal+1);
            break;
       }        
     }
@@ -305,7 +305,7 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            errorCnt = (errorCnt == 1?1:errorCnt-1);
            break;
         case 1: 
-           arcLengthSampleSize = (arcLengthSampleSize == 0.1?0.1:arcLengthSampleSize-0.1);
+           arcLengthSampleSize = (arcLengthSampleSize < 0.1?0.1:arcLengthSampleSize-0.1);
            break;
         case 2: 
            maxThresholdRad = (maxThresholdRad < 1?1:maxThresholdRad-10);
@@ -314,10 +314,10 @@ void keyPressed() { // executed each time a key is pressed: sets the "keyPressed
            errVal = (errVal < 0.00001?0.00001:errVal-0.00001);
            break;
         case 4:
-           maxPatternElem = (maxPatternElem == 1?1:maxPatternElem-1);
+           maxPatternElem = (maxPatternElem < 1?1:maxPatternElem-1);
            break;
         case 5:
-           dtwErrVal = (dtwErrVal == 100?100:dtwErrVal-1);
+           dtwErrVal = (dtwErrVal < 10?10:dtwErrVal-1);
            break;
       }  
     }

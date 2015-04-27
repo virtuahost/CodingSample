@@ -1104,7 +1104,8 @@ class BSpline {
   }
   
   void registerDTW(BSpline Q)
-  {    
+  {   
+    this.dicDTWKey.clear(); 
     this.createArcLengthSample();
     Q.createArcLengthSample();
     float refDist = 0;
