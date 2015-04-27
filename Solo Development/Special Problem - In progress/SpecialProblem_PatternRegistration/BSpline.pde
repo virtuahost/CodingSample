@@ -853,37 +853,59 @@ class BSpline {
     boolean process = false;
     float removeVal = -1;
     int size = 0;
-    do
-    {
+//    do
+//    {
       process = false;
       end = -1;
       for (float keyVal : dicOmegaSet.keySet ())
       {
         if(drawDebug){fill(red);stroke(red);arcLengthSample.get(dicOmegaSet.get(keyVal).allIndex.get(0)).tag(String.valueOf(dicOmegaSet.get(keyVal).cntVal),10);noFill();}
-        if(dicOmegaSet.get(keyVal).cntVal < medianVal)
-        {
-          end = dicOmegaSet.get(keyVal).allIndex.get(0);
-          size = dicOmegaSet.get(keyVal).allIndex.size();
-          removeVal = keyVal;
-          process = true;
-          break;
+//        if(dicOmegaSet.get(keyVal).cntVal < medianVal)
+//        {
+//          end = dicOmegaSet.get(keyVal).allIndex.get(0);
+//          size = dicOmegaSet.get(keyVal).allIndex.size();
+//          removeVal = keyVal;
+//          process = true;
+//          break;
+//        }
+          if(dicOmegaSet.get(keyVal).cntVal <= medianVal)
+          {
+            float d = medianVal - dicOmegaSet.get(keyVal).cntVal;
+            if(d < newVal)
+            {
+              newVal = medianVal - dicOmegaSet.get(keyVal).cntVal;
+            }
+          }
+      }
+      for(float keyVal : dicOmegaSet.keySet ())
+      {
+        if((dicOmegaSet.get(keyVal).cntVal == (medianVal - newVal))||(dicOmegaSet.get(keyVal).cntVal == (medianVal - newVal -1))||(dicOmegaSet.get(keyVal).cntVal == (medianVal - newVal+1)))
+        {     
+          if((start == -1) || (this.arcLengthSample.get(dicOmegaSet.get(keyVal).allIndex.get(0)).x < this.arcLengthSample.get(start).x))
+          {
+            start = dicOmegaSet.get(keyVal).allIndex.get(0);
+          }
+          if((end==-1) || (this.arcLengthSample.get(dicOmegaSet.get(keyVal).allIndex.get(0)).x > this.arcLengthSample.get(end).x))
+          {
+            end = dicOmegaSet.get(keyVal).allIndex.get(0);
+          }
         }
       }
-      
-      if(removeVal > -1)dicOmegaSet.remove(removeVal);
-      start = 0;
-      if (start>-1&&end>-1&&(end-start>this.arcLengthSample.size()/maxPatternElem))newVal = registerAndDraw(start, end, reqdClr,false);
-      println("End: " + end + "Newval: "+ newVal + "finalVal: " + finalVal);
-      if((newVal < size)&&(newVal > 1)&&(finalVal<=newVal))
-      {
-        remIndex = end - start;
-        finalStart = start;
-        finalEnd = end;
-        finalVal = newVal;
-      }
-    }
-    while(process);    
-    if(finalEnd > -1)registerAndDraw(finalStart, finalEnd, reqdClr,true);
+//      if(removeVal > -1)dicOmegaSet.remove(removeVal);
+//      start = 0;
+//      if (start>-1&&end>-1&&(end-start>this.arcLengthSample.size()/maxPatternElem))newVal = registerAndDraw(start, end, reqdClr,false);
+//      println("End: " + end + "Newval: "+ newVal + "finalVal: " + finalVal);
+//      if((newVal < size)&&(newVal > 1)&&(finalVal<=newVal))
+//      {
+//        remIndex = end - start;
+//        finalStart = start;
+//        finalEnd = end;
+//        finalVal = newVal;
+//      }
+//    }
+//    while(process);    
+//    if(finalEnd > -1)finalVal = registerAndDraw(finalStart, finalEnd, reqdClr,true);
+    if(end > -1)finalVal = registerAndDraw(start, end, reqdClr,true);
     return finalVal;
   }
 
@@ -1026,10 +1048,9 @@ class BSpline {
     {
       Q.add(P2(arcLengthSample.get(i)));
     }
-    if(draw)this.showSampleCurve(Q, black);
     if(!useDTW)
     {
-      for (int i=end+1; i<arcLengthSample.size ()-curvSize; i++) 
+      for (int i=0; i<arcLengthSample.size ()-curvSize; i++) 
       {
         BSpline tempS = new BSpline();
         tempS.copySampleCurve(this, i, i+curvSize-1);
@@ -1044,8 +1065,9 @@ class BSpline {
     }
     else
     {
-       //Not implemented as performance made using DTW with auto registration very difficult to implement
+       //Not implemented as performance made using DTW with auto registration impractical as of now. Need FastDTW
     }
+    if(draw)this.showSampleCurve(Q, black);
     return k;
   }
   
