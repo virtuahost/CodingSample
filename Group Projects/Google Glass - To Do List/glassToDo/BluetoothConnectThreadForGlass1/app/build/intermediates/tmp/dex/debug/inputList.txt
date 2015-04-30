@@ -1,0 +1,2 @@
+/Users/ash/p/glass/glassToDo/BluetoothConnectThreadForGlass1/app/build/intermediates/classes/debug
+/Users/ash/p/glass/glassToDo/BluetoothConnectThreadForGlass1/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-300ead3a69bf3ff29d50b2b7a2246a1f82f0d029.jar

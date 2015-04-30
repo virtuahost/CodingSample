@@ -27,6 +27,7 @@ public class TaskItemListAdapter extends ArrayAdapter<TaskItem> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.task_list_item, parent, false);
         ImageView cautionView = new ImageView(getContext());
