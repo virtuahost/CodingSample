@@ -1,4 +1,7 @@
-#Case study to detect handwriting recognition for integers (recognizer)
+#Apply gaussian blur to the image and then perform edge detection using Canny
+#Once contours are found using the ROI of the contours perform OTSU thresholding.
+#Then predict the digit against the generated model
+#Used Adrian Rosebrock's book to create the following code
 import argparse
 import cPickle
 import mahotas
@@ -7,11 +10,12 @@ from hog_support import HOG
 import dataset_support as ds
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-m","--model",required=True,help="model path")
 ap.add_argument("-i","--image",required=True,help="image path")
 args = vars(ap.parse_args())
 
-model = open(args["model"]).read()
+modelpath = "model/model.cPickle"
+
+model = open(modelpath).read()
 model = cPickle.loads(model)
 
 hog = HOG(orientations=18,pixelspercell=(10,10),cellsperblock=(1,1),normalize=True)

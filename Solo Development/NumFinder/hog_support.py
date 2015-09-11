@@ -1,3 +1,4 @@
+#Uses Histogram of Oriented gradients to find features for the digits
 from skimage import feature
 
 class HOG:

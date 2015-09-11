@@ -1,17 +1,16 @@
-#Case study to detect handwriting recognition for integers (trainer)
-import argparse
+#Trains the model from dataset of training data for digits
+#Uses a Linear SVC to train the model
+#Used Adrian Rosebrock's book to create the following code
 import cPickle
 from hog_support import HOG
 import dataset_support as ds
 from sklearn.svm import LinearSVC
 
+#Path to dataset and path to save model
+dataset = "dataset/digits.csv"
+modelpath = "model/model.cPickle"
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-d","--dataset",required = True, help = "path to the dataset file")
-ap.add_argument("-m","--model",required = True, help = "path to model")
-args = vars(ap.parse_args())
-
-(digits,target) = ds.load_digits(args["dataset"])
+(digits,target) = ds.load_digits(dataset)
 data = []
 hog = HOG(orientations = 18,pixelspercell=(10,10),cellsperblock=(1,1),normalize=True)
 
@@ -24,6 +23,6 @@ for image in digits:
 
 model = LinearSVC(random_state=42)
 model.fit(data,target)
-f = open(args["model"],"w")
+f = open(modelpath,"w")
 f.write(cPickle.dumps(model))
 f.close()

@@ -1,3 +1,5 @@
+#Reads the data for iamges from a csv file
+#Allows preprocessing of data and refocusing of data to center of image
 import numpy as np
 import mahotas
 import cv2
