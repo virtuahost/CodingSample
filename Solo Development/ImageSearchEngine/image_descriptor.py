@@ -12,7 +12,7 @@ class ImageDescriptor:
 		features = []
 
 		#Color histogram descriptor
-		imageHSV = cv2.cvtColor(image,cv2.COLOR_BRG2HSV)
+		imageHSV = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
 
 		#Calculate the height and the width so that we can segment the image into pieces
 		#In this case we are segmenting into 5 pieces with 4 corners and a mid piece(ellipse)
@@ -40,14 +40,14 @@ class ImageDescriptor:
 		features = []
 
 		#Hu's moment descriptor
-		imageGray = cv2.cvtColor(image,cv2.COLOR_BRG2GRAY)
+		imageGray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 		features = cv2.HuMoments(cv2.moments(imageGray)).flatten()
 		return features
 
-	def histograms(self,image,mask):
+	def histogram(self,image,mask):
 		# Function to calculate the histogram for the images
 		hist = cv2.calcHist([image],[0,1,2],mask,self.bins,[0, 180,0, 256,0,256])
-		hist = cv2.normalize(hist).flatten()
-		return hist
+		cv2.normalize(hist,hist)
+		return hist.flatten()
 
 

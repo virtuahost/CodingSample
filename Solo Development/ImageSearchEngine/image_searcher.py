@@ -3,12 +3,13 @@
 #Used concepts from Adrian Roseborck's blog from pyimagesearch.com
 
 import cv2
+import argparse
 from image_search_helper import SearchHelper
 from image_descriptor import ImageDescriptor
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-i","--image",required = true,"Path to the search image")
-arg = vars(ap.parse_args())
+ap.add_argument("-i","--image",required=True,help="image path")
+args = vars(ap.parse_args())
 
 #Path to indexset for color descriptor
 indexcolor = "indexdata\indexcolor.csv"
@@ -23,7 +24,7 @@ dataset = "dataset"
 desc = ImageDescriptor((8,12,3))
 
 #read query image and extract features
-image = cv2.imread(arg["image"])
+imageData = cv2.imread(args["image"])
 dataDescColor = desc.describeColor(imageData)
 dataDescHu = desc.describeHu(imageData)
 
@@ -31,9 +32,10 @@ dataDescHu = desc.describeHu(imageData)
 sHelper = SearchHelper(indexcolor,indexhu)
 output = sHelper.search(dataDescColor,dataDescHu)
 
-cv2.imshow("Input image",image)
+cv2.imshow("Input image",imageData)
 
 for (s,r) in output:
-	img = cv2.imread(dataset+"/"+r)
+	img = cv2.imread(r)
+	print r
 	cv2.imshow("Results",img)
 	cv2.waitKey(0)

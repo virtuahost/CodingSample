@@ -27,7 +27,7 @@ outputh = open(indexhu,"w")
 desc = ImageDescriptor((8,12,3))
 
 #Get the images for processing
-for image in glob.glob(dataset + "/*.png"):
+for image in glob.glob(dataset + "/*.jpg"):
 	imageName = image[image.rfind("/") + 1:]
 	imageData = cv2.imread(imageName)
 
@@ -38,7 +38,7 @@ for image in glob.glob(dataset + "/*.png"):
 	#Prepare data for writing into file
 	dataDescColor = [str(d) for d in dataDescColor]
 	dataDescHu = [str(d) for d in dataDescHu]
-
+	
 	#Write to file
 	outputc.write("%s,%s\n" % (imageName, ",".join(dataDescColor)))
 	outputh.write("%s,%s\n" % (imageName, ",".join(dataDescHu)))

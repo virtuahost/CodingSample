@@ -4,12 +4,12 @@
 import numpy as np
 import csv
 
-class SearchHelper(self,indexC,indexHu):
+class SearchHelper:
 	def __init__(self,indexC,indexHu):
 		self.indexC = indexC
 		self.indexHu = indexHu
 
-	def search(self, queryC, queryHu, returnCount=20):
+	def search(self, queryC, queryHu, returnCount=5):
 		output = {}
 		#Read through each row to match descriptor for each image
 		#and calculate the distance metric by averaging out the value of the 2 metrics
@@ -35,7 +35,7 @@ class SearchHelper(self,indexC,indexHu):
 
 	#Chi square distance to be used for searching
 	def chi2_distance(self, histA, histB, offset=1e-10):
-		d = 0.5 * np.sum([((a-b**2)/(a + b + offset)) for (a,b) in zip(histA,histB)])
+		d = 0.5 * np.sum([((a-b)**2/(a + b + offset)) for (a,b) in zip(histA,histB)])
 		return d
 
 
